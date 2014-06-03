@@ -1,0 +1,15 @@
+{
+  "name": "quinn2",
+  "version": "2.0.0-pre1",
+  "description": "",
+  "main": "lib/quinn.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^1.2.4",
+    "node-inspector": "^0.7.3"
+  }
+}
