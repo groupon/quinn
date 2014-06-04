@@ -1,4 +1,6 @@
 'use strict';
+var http = require('http');
+
 var quinn = require('../');
 var routes = quinn.routes;
 
