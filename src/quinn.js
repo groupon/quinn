@@ -1,36 +1,11 @@
 'use strict';
 
-var http = require('http');
+import {STATUS_CODES} from 'http';
 
-var Promise = require('bluebird');
-var _ = require('lodash');
+import default as Promise from 'bluebird';
+import {partial} from 'lodash';
 
-function Router(req) {
-  var response = undefined;
-
-  return {
-    GET: function(path, handler) {
-      if (typeof handler !== 'function') {
-        throw new Error('Expected function as handler');
-      }
-      if (response === undefined &&
-          req.method === 'GET' &&
-          req.url === path) {
-        response = handler(req);
-      }
-      return this;
-    },
-    getResponse: function() { return response; }
-  }
-}
-
-function routes(routeDef) {
-  return function(req) {
-    var router = Router(req);
-    routeDef(router);
-    return router.getResponse();
-  };
-}
+import {routes} from './router';
 
 function NotFound(req) {
   return {
@@ -48,6 +23,24 @@ function ServerError(req, body) {
   }
 }
 
+function PlainText(statusCode, body) {
+  return {
+    statusCode: statusCode,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': body.length
+    },
+    body: body
+  };
+}
+
+function pipeHeaders(src, dest) {
+  var key;
+  for (key in src.headers) {
+    dest.setHeader(key, src.headers[key]);
+  }
+}
+
 function pipeResponse(req, destination, pass, response) {
   if (response === undefined) {
     if (typeof pass === 'function') {
@@ -59,39 +52,21 @@ function pipeResponse(req, destination, pass, response) {
   }
   // send response
   if (typeof response === 'string') {
-    var body = new Buffer(response, 'utf8');
-    response = {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'text/plain',
-        'Content-Length': body.length
-      },
-      body: body
-    }
+    response = PlainText(200, new Buffer(response, 'utf8'));
   } else if (typeof response === 'number') {
-    var body = new Buffer(
-      http.STATUS_CODES[response],
+    response = PlainText(response, new Buffer(
+      STATUS_CODES[response],
       'utf8'
-    );
-    response = {
-      statusCode: response,
-      headers: {
-        'Content-Type': 'text/plain',
-        'Content-Length': body.length
-      },
-      body: body
-    }
+    ));
   }
   destination.statusCode = response.statusCode;
-  for (var key in response.headers) {
-    destination.setHeader(key, response.headers[key]);
-  }
+  pipeHeaders(response, destination);
   destination.end(response.body);
 }
 
 function defaultErrorHandler(req, err) {
   console.error('[%s] %s %s\n%s',
-    Date.now().toISOString(), req.method, req.url, err.stack
+    new Date().toISOString(), req.method, req.url, err.stack
   );
   return ServerError(req, err.stack);
 }
@@ -109,7 +84,7 @@ function quinn(handler, errorHandler) {
       }
       return Promise.reject(err);
     })
-    .then(_.partial(pipeResponse, req, destination, pass))
+    .then(partial(pipeResponse, req, destination, pass))
     .catch(pass)
     .nodeify(function(err) {
       if (err) throw err;
@@ -123,8 +98,8 @@ function addCookie(name, value, opts, response) {
 }
 
 function sessionMiddleware(inner, req) {
-  return inner(req).then(_.partial(addCookie, 'sid', 'my-value'));
+  return inner(req).then(partial(addCookie, 'sid', 'my-value'));
 }
 
-module.exports = quinn;
-quinn.routes = routes;
+export default quinn;
+export {routes as routes};
