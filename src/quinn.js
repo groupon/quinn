@@ -7,33 +7,6 @@ import {partial} from 'lodash';
 
 import {routes} from './router';
 
-function PlainText(statusCode, body) {
-  if (!Buffer.isBuffer(body)) {
-    body = new Buffer(body);
-  }
-
-  return {
-    statusCode: statusCode,
-    headers: {
-      'Content-Type': 'text/plain',
-      'Content-Length': body.length
-    },
-    body: body
-  };
-}
-
-function NotFound(req) {
-  return PlainText(
-    404, 'Cannot ' + req.method + ' ' + req.url
-  );
-}
-
-function ServerError(req, body) {
-  return PlainText(
-    500, body
-  );
-}
-
 function pipeHeaders(src, dest) {
   var key;
   for (key in src.headers) {
@@ -71,7 +44,7 @@ function defaultErrorHandler(req, err) {
   return ServerError(req, err.stack);
 }
 
-function quinn(handler, errorHandler) {
+export default function quinn(handler, errorHandler) {
   if (typeof reportError !== 'function') {
     errorHandler = defaultErrorHandler;
   }
@@ -92,14 +65,31 @@ function quinn(handler, errorHandler) {
   };
 }
 
-function addCookie(name, value, opts, response) {
-  response.headers['Cookie'].push('foo!');
-  return response;
+export function PlainText(statusCode, body) {
+  if (!Buffer.isBuffer(body)) {
+    body = new Buffer(body);
+  }
+
+  return {
+    statusCode: statusCode,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': body.length
+    },
+    body: body
+  };
 }
 
-function sessionMiddleware(inner, req) {
-  return inner(req).then(partial(addCookie, 'sid', 'my-value'));
+export function NotFound(req) {
+  return PlainText(
+    404, 'Cannot ' + req.method + ' ' + req.url
+  );
 }
 
-export default quinn;
-export {routes, PlainText, ServerError, NotFound};
+export function ServerError(req, body) {
+  return PlainText(
+    500, body
+  );
+}
+
+export {routes};

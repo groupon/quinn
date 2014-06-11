@@ -7,33 +7,6 @@ var partial = require('lodash').partial;
 
 var routes = require('./router').routes;
 
-function PlainText(statusCode, body) {
-  if (!Buffer.isBuffer(body)) {
-    body = new Buffer(body);
-  }
-
-  return {
-    statusCode: statusCode,
-    headers: {
-      'Content-Type': 'text/plain',
-      'Content-Length': body.length
-    },
-    body: body
-  };
-}
-
-function NotFound(req) {
-  return PlainText(
-    404, 'Cannot ' + req.method + ' ' + req.url
-  );
-}
-
-function ServerError(req, body) {
-  return PlainText(
-    500, body
-  );
-}
-
 function pipeHeaders(src, dest) {
   var key;
   for (key in src.headers) {
@@ -71,7 +44,7 @@ function defaultErrorHandler(req, err) {
   return ServerError(req, err.stack);
 }
 
-function quinn(handler, errorHandler) {
+module.exports = function quinn(handler, errorHandler) {
   if (typeof reportError !== 'function') {
     errorHandler = defaultErrorHandler;
   }
@@ -92,14 +65,31 @@ function quinn(handler, errorHandler) {
   };
 }
 
-function addCookie(name, value, opts, response) {
-  response.headers['Cookie'].push('foo!');
-  return response;
-}
+function PlainText(statusCode, body) {
+  if (!Buffer.isBuffer(body)) {
+    body = new Buffer(body);
+  }
 
-function sessionMiddleware(inner, req) {
-  return inner(req).then(partial(addCookie, 'sid', 'my-value'));
-}
+  return {
+    statusCode: statusCode,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': body.length
+    },
+    body: body
+  };
+} module.exports.PlainText = PlainText;
 
-module.exports = quinn;
-module.exports.routes = routes;module.exports.PlainText = PlainText;module.exports.ServerError = ServerError;module.exports.NotFound = NotFound;
+function NotFound(req) {
+  return PlainText(
+    404, 'Cannot ' + req.method + ' ' + req.url
+  );
+} module.exports.NotFound = NotFound;
+
+function ServerError(req, body) {
+  return PlainText(
+    500, body
+  );
+} module.exports.ServerError = ServerError;
+
+module.exports.routes = routes;
