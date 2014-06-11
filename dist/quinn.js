@@ -7,23 +7,11 @@ var partial = require('lodash').partial;
 
 var routes = require('./router').routes;
 
-function NotFound(req) {
-  return {
-    statusCode: 404,
-    headers: { 'Content-Type': 'text/plain' },
-    body: 'Cannot ' + req.method + ' ' + req.url
-  }
-}
-
-function ServerError(req, body) {
-  return {
-    statusCode: 500,
-    headers: { 'Content-Type': 'text/plain' },
-    body: body
-  }
-}
-
 function PlainText(statusCode, body) {
+  if (!Buffer.isBuffer(body)) {
+    body = new Buffer(body);
+  }
+
   return {
     statusCode: statusCode,
     headers: {
@@ -32,6 +20,18 @@ function PlainText(statusCode, body) {
     },
     body: body
   };
+}
+
+function NotFound(req) {
+  return PlainText(
+    404, 'Cannot ' + req.method + ' ' + req.url
+  );
+}
+
+function ServerError(req, body) {
+  return PlainText(
+    500, body
+  );
 }
 
 function pipeHeaders(src, dest) {
@@ -102,4 +102,4 @@ function sessionMiddleware(inner, req) {
 }
 
 module.exports = quinn;
-module.exports.routes = routes;
+module.exports.routes = routes;module.exports.PlainText = PlainText;module.exports.ServerError = ServerError;module.exports.NotFound = NotFound;

@@ -5,6 +5,7 @@ COMPILE = ./build/compile.js
 
 default: build
 
+.PHONY: build test check-checkout-clean
 build: $(DIST)
 
 dist/%.js: src/%.js build/compile.js
