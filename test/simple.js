@@ -2,6 +2,8 @@
 var http = require('http');
 var assert = require('assert');
 
+var Promise = require('bluebird');
+
 var quinn = require('../');
 var routes = quinn.routes;
 
@@ -20,44 +22,66 @@ describe('quinn.boots', function() {
       server.listen(0, done);
     });
 
-    it('serves requests', function(done) {
-      var url = 'http://127.0.0.1:' + server.address().port + '/test';
-      http.get(url).on('response', function(res) {
-        assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-type'], 'text/plain');
-        assert.equal(res.headers['content-length'], '2');
-        done();
+    function getPath(path, callback, onError) {
+      return new Promise(function(resolve, reject) {
+        var url = 'http://127.0.0.1:' + server.address().port + path;
+        http.get(url)
+        .on('response', function(res) {
+          resolve(res);
+        })
+        .on('error', reject);
       });
-    });
+    }
 
-    it('shows errors', function(done) {
-      var url = 'http://127.0.0.1:' + server.address().port + '/throws';
-      http.get(url).on('response', function(res) {
-        assert.equal(res.statusCode, 500);
-        assert.equal(res.headers['content-type'], 'text/plain');
-        assert(res.headers['content-length']);
+    function readBody(res) {
+      return new Promise(function(resolve, reject) {
         var body = '';
         res.on('data', function(chunk) { body += chunk.toString() });
         res.on('end', function() {
+          resolve(body);
+        });
+      });
+    }
+
+    it('serves requests', function() {
+      return (
+        getPath('/test')
+        .then(function(res) {
+          assert.equal(res.statusCode, 200);
+          assert.equal(res.headers['content-type'], 'text/plain');
+          assert.equal(res.headers['content-length'], '2');
+        })
+      );
+    });
+
+    it('shows errors', function() {
+      return (
+        getPath('/throws')
+        .then(function(res) {
+          assert.equal(res.statusCode, 500);
+          assert.equal(res.headers['content-type'], 'text/plain');
+          assert(res.headers['content-length']);
+          return readBody(res);
+        })
+        .then(function(body) {
           assert.equal(body.substr(0, 15), 'Error: Fatality');
-          done();
-        });
-      });
+        })
+      );
     });
 
-    it('sends 404s', function(done) {
-      var url = 'http://127.0.0.1:' + server.address().port + '/nirvana';
-      http.get(url).on('response', function(res) {
-        assert.equal(res.statusCode, 404);
-        assert.equal(res.headers['content-type'], 'text/plain');
-        assert(res.headers['content-length']);
-        var body = '';
-        res.on('data', function(chunk) { body += chunk.toString() });
-        res.on('end', function() {
+    it('sends 404s', function() {
+      return (
+        getPath('/nirvana')
+        .then(function(res) {
+          assert.equal(res.statusCode, 404);
+          assert.equal(res.headers['content-type'], 'text/plain');
+          assert(res.headers['content-length']);
+          return readBody(res);
+        })
+        .then(function(body) {
           assert.equal(body, 'Cannot GET /nirvana');
-          done();
-        });
-      });
+        })
+      );
     });
 
     after(function() {
