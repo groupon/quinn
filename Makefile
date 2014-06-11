@@ -17,4 +17,7 @@ check-checkout-clean:
 	git diff --exit-code
 
 test: build
-	@mocha
+	@./node_modules/.bin/mocha
+
+watch:
+	@./node_modules/.bin/wach -o "src/**/*.js" "make test"

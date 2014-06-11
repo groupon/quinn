@@ -1,3 +1,5 @@
+/*global describe, it, after */
+'use strict';
 
 var http = require('http');
 var assert = require('assert');
@@ -18,11 +20,14 @@ describe('quinn.boots', function() {
         app.GET('/throws', function() {
           throw new Error('Fatality');
         });
+        app.GET('/hello/{name}', function(req) {
+          return 'Hello, ' + req.params.name + '!';
+        });
       })));
       server.listen(0, done);
     });
 
-    function getPath(path, callback, onError) {
+    function getPath(path) {
       return new Promise(function(resolve, reject) {
         var url = 'http://127.0.0.1:' + server.address().port + path;
         http.get(url)
@@ -36,16 +41,17 @@ describe('quinn.boots', function() {
     function readBody(res) {
       return new Promise(function(resolve, reject) {
         var body = '';
-        res.on('data', function(chunk) { body += chunk.toString() });
+        res.on('data', function(chunk) { body += chunk.toString(); });
         res.on('end', function() {
           resolve(body);
         });
+        res.on('error', reject);
       });
     }
 
     it('serves requests', function() {
       return (
-        getPath('/test')
+        getPath('/test?a=ok')
         .then(function(res) {
           assert.equal(res.statusCode, 200);
           assert.equal(res.headers['content-type'], 'text/plain');
@@ -80,6 +86,21 @@ describe('quinn.boots', function() {
         })
         .then(function(body) {
           assert.equal(body, 'Cannot GET /nirvana');
+        })
+      );
+    });
+
+    it('supports route parameters', function() {
+      return (
+        getPath('/hello/world')
+        .then(function(res) {
+          assert.equal(res.statusCode, 200);
+          assert.equal(res.headers['content-type'], 'text/plain');
+          assert(res.headers['content-length']);
+          return readBody(res);
+        })
+        .then(function(body) {
+          assert.equal(body, 'Hello, world!');
         })
       );
     });

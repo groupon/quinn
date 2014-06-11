@@ -3,15 +3,15 @@
 var STATUS_CODES = require('http').STATUS_CODES;
 
 var Promise = require('bluebird');
-var partial = require('lodash').partial;
+var mod$0 = require('lodash');var partial = mod$0.partial;var each = mod$0.each;
 
 var routes = require('./router').routes;
+var parseRequestUrl = require('./request').parseRequestUrl;
 
 function pipeHeaders(src, dest) {
-  var key;
-  for (key in src.headers) {
-    dest.setHeader(key, src.headers[key]);
-  }
+  each(src.headers, function(header, name)  {
+    dest.setHeader(name, header);
+  });
 }
 
 function pipeResponse(req, destination, pass, response) {
@@ -38,9 +38,6 @@ function pipeResponse(req, destination, pass, response) {
 }
 
 function defaultErrorHandler(req, err) {
-  console.error('[%s] %s %s\n%s',
-    new Date().toISOString(), req.method, req.url, err.stack
-  );
   return ServerError(req, err.stack);
 }
 
@@ -50,7 +47,7 @@ module.exports = function quinn(handler, errorHandler) {
   }
 
   return function handleRequest(req, destination, pass) {
-    Promise.try(handler, [req])
+    Promise.try(partial(parseRequestUrl, req, handler))
     .catch(function(err) {
       if (typeof pass !== 'function') {
         return errorHandler(req, err);

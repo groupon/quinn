@@ -1,14 +1,8 @@
 'use strict';
 
-var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
+var matchRoute = require('./router/compile').matchRoute;
 
-function matchRoute(req, method, path) {
-  if (req.method === method &&
-      req.url === path) {
-    return true;
-  }
-  return false;
-}
+var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
 
 
   function Router(request) {
@@ -26,7 +20,7 @@ function matchRoute(req, method, path) {
     return this.$Router_response;
   };
 
-  Router.prototype.tryRoute=function(method, path, handler) {
+  Router.prototype.tryRoute=function(method, pattern, handler) {
     if (this.$Router_response !== undefined) return;
 
     if (typeof handler !== 'function') {
@@ -34,9 +28,9 @@ function matchRoute(req, method, path) {
     }
 
     var req = this.$Router_request;
-    var match = matchRoute(req, method, path);
-    if (match) {
-      this.$Router_response = handler(req);
+    var matchedReq = matchRoute(req, method, pattern);
+    if (matchedReq !== null) {
+      this.$Router_response = handler(matchedReq);
     }
     return this;
   };

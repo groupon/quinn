@@ -1,14 +1,8 @@
 'use strict';
 
-var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
+import {matchRoute} from './router/compile';
 
-function matchRoute(req, method, path) {
-  if (req.method === method &&
-      req.url === path) {
-    return true;
-  }
-  return false;
-}
+var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
 
 class Router {
   constructor(request) {
@@ -26,7 +20,7 @@ class Router {
     return this._response;
   }
 
-  tryRoute(method, path, handler) {
+  tryRoute(method, pattern, handler) {
     if (this._response !== undefined) return;
 
     if (typeof handler !== 'function') {
@@ -34,9 +28,9 @@ class Router {
     }
 
     var req = this._request;
-    var match = matchRoute(req, method, path);
-    if (match) {
-      this._response = handler(req);
+    var matchedReq = matchRoute(req, method, pattern);
+    if (matchedReq !== null) {
+      this._response = handler(matchedReq);
     }
     return this;
   }
