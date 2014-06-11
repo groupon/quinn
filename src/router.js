@@ -1,7 +1,5 @@
 'use strict';
 
-var _ = require('lodash');
-
 var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
 
 function matchRoute(req, method, path) {
