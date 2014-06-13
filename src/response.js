@@ -50,6 +50,12 @@ class QuinnResponse {
         // Important: exclude Host, Content-Length, and other dangerous headers
       }
 
+      if (typeof body.path === 'string') {
+        // TODO: Try guessing Content-Type based on this property
+        // Idea by @mikeal:
+        // https://github.com/mikeal/response/blob/0bb9b978cd120d69c9369faf385b11c974ab35a5/index.js#L22
+      }
+
       return resolvedHeaders(this.headers.dict).then(
         headers => new QuinnResponse({
           statusCode: this.statusCode,
