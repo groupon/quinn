@@ -26,18 +26,15 @@ function resolvedHeaders(headers) {
   );
 }
 
-function pipeHeaders(headers, res) {
-  each(headers, function(header, name)  {
-    res.setHeader(name, header);
-  });
-}
-
 
   function QuinnResponse(props, isResolved) {
     this.statusCode = props.statusCode || 200;
     this.headers = caseless(props.headers || {});
     this.body = props.body || null; // null === empty body
     this.$QuinnResponse0 = !!isResolved;
+
+    if (this.$QuinnResponse0)
+      this.$QuinnResponse1();
   }
 
   QuinnResponse.prototype.resolved=function() {
@@ -54,30 +51,27 @@ function pipeHeaders(headers, res) {
     });
   };
 
-  QuinnResponse.prototype.applyDefaults=function() {
-    if (!this.hasHeader('Content-Type')) {
+  QuinnResponse.prototype.$QuinnResponse1=function() {
+    if (!this.hasHeader('Content-Type'))
       this.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    }
 
-    if (this.body !== null && this.body.getByteSize) {
+    if (this.body !== null && this.body.getByteSize)
       this.setHeader('Content-Length', this.body.getByteSize());
-    }
   };
 
   QuinnResponse.prototype.setStatusCode=function(code) {
-    this.statusCode = code;
-    return this;
+    return this.statusCode = code, this;
   };
 
   QuinnResponse.prototype.pipe=function(res) {
-    this.resolved().then( function(resolved)  {
-      resolved.applyDefaults();
+    if (!this.$QuinnResponse0)
+      return this.resolved().then( function(r)  {return r.pipe(res);} );
 
-      res.statusCode = resolved.statusCode;
-      pipeHeaders(resolved.headers.dict, res);
-      resolved.body.pipe(res);
-      return resolved;
+    res.statusCode = this.statusCode;
+    each(this.headers.dict, function(header, name)  {
+      res.setHeader(name, header);
     });
+    this.body.pipe(res);
   };
 
   QuinnResponse.prototype.hasHeader=function(name) {
@@ -89,8 +83,7 @@ function pipeHeaders(headers, res) {
   };
 
   QuinnResponse.prototype.setHeader=function(name, value) {
-    this.headers.set(name, value);
-    return this;
+    return this.headers.set(name, value), this;
   };
 
   QuinnResponse.prototype.addHeader=function(name, value) {

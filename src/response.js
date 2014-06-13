@@ -26,18 +26,15 @@ function resolvedHeaders(headers) {
   );
 }
 
-function pipeHeaders(headers, res) {
-  each(headers, (header, name) => {
-    res.setHeader(name, header);
-  });
-}
-
 export class QuinnResponse {
   constructor(props, isResolved) {
     this.statusCode = props.statusCode || 200;
     this.headers = caseless(props.headers || {});
     this.body = props.body || null; // null === empty body
     this._isResolved = !!isResolved;
+
+    if (this._isResolved)
+      this._ensureDefaults();
   }
 
   resolved() {
@@ -54,14 +51,12 @@ export class QuinnResponse {
     });
   }
 
-  applyDefaults() {
-    if (!this.hasHeader('Content-Type')) {
+  _ensureDefaults() {
+    if (!this.hasHeader('Content-Type'))
       this.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    }
 
-    if (this.body !== null && this.body.getByteSize) {
+    if (this.body !== null && this.body.getByteSize)
       this.setHeader('Content-Length', this.body.getByteSize());
-    }
   }
 
   setStatusCode(code) {
@@ -69,14 +64,14 @@ export class QuinnResponse {
   }
 
   pipe(res) {
-    this.resolved().then( resolved => {
-      resolved.applyDefaults();
+    if (!this._isResolved)
+      return this.resolved().then( r => r.pipe(res) );
 
-      res.statusCode = resolved.statusCode;
-      pipeHeaders(resolved.headers.dict, res);
-      resolved.body.pipe(res);
-      return resolved;
+    res.statusCode = this.statusCode;
+    each(this.headers.dict, (header, name) => {
+      res.setHeader(name, header);
     });
+    this.body.pipe(res);
   }
 
   hasHeader(name) {
