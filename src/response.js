@@ -78,14 +78,18 @@ class QuinnResponse {
   }
 
   pipe(res) {
-    if (!this._isResolved)
-      return this.resolved().then( r => r.pipe(res) );
-
-    res.statusCode = this.statusCode;
-    each(this.headers.dict, (header, name) => {
-      res.setHeader(name, header);
-    });
-    this.body.pipe(res);
+    if (!this._isResolved) {
+      this.resolved().then( r => r.pipe(res) );
+    } else {
+      if (res.setHeader) {
+        res.statusCode = this.statusCode;
+        each(this.headers.dict, (header, name) => {
+          res.setHeader(name, header);
+        });
+      }
+      this.body.pipe(res);
+    }
+    return res;
   }
 
   hasHeader(name) {

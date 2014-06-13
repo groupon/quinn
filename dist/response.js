@@ -78,14 +78,18 @@ function resolvedHeaders(headers) {
   };
 
   QuinnResponse.prototype.pipe=function(res) {
-    if (!this.$QuinnResponse0)
-      return this.resolved().then( function(r)  {return r.pipe(res);} );
-
-    res.statusCode = this.statusCode;
-    each(this.headers.dict, function(header, name)  {
-      res.setHeader(name, header);
-    });
-    this.body.pipe(res);
+    if (!this.$QuinnResponse0) {
+      this.resolved().then( function(r)  {return r.pipe(res);} );
+    } else {
+      if (res.setHeader) {
+        res.statusCode = this.statusCode;
+        each(this.headers.dict, function(header, name)  {
+          res.setHeader(name, header);
+        });
+      }
+      this.body.pipe(res);
+    }
+    return res;
   };
 
   QuinnResponse.prototype.hasHeader=function(name) {
