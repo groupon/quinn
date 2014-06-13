@@ -55,7 +55,7 @@ export class QuinnResponse {
     if (!this.hasHeader('Content-Type'))
       this.header('Content-Type', 'text/plain; charset=utf-8');
 
-    if (this.body !== null && this.body.getByteSize)
+    if (this.body !== null && typeof this.body.getByteSize === 'function')
       this.header('Content-Length', this.body.getByteSize());
   }
 
