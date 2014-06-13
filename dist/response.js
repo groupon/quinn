@@ -2,7 +2,7 @@
 
 var caseless = require('caseless');
 var mod$0 = require('bluebird');var all = mod$0.all;var resolve = mod$0.resolve;
-var mod$1 = require('lodash');var zipObject = mod$1.zipObject;var each = mod$1.each;
+var mod$1 = require('lodash');var zipObject = mod$1.zipObject;var each = mod$1.each;var isObject = mod$1.isObject;
 var toStream = require('./body').toStream;
 
 function toArray(value) {
@@ -35,12 +35,19 @@ function resolvedHeaders(headers) {
 
   QuinnResponse.prototype.resolved=function() {
     if (this.$QuinnResponse0) return resolve(this);
-    return resolve(this.body).then(toStream).then( function(body)  {
+    return this.resolvedBody().then( function(body)  {
       if (!this.hasHeader('Content-Type'))
         this.header('Content-Type', 'text/plain; charset=utf-8');
 
       if (typeof body.getByteSize === 'function') {
         this.header('Content-Length', body.getByteSize());
+      } else {
+        // TODO: Handle content-length for other kinds of streams..?
+      }
+
+      if (isObject(body.headers)) {
+        // TODO: Assume this is an attempt to pipe through in incoming response
+        // Important: exclude Host, Content-Length, and other dangerous headers
       }
 
       return resolvedHeaders(this.headers.dict).then(
@@ -53,16 +60,21 @@ function resolvedHeaders(headers) {
     }.bind(this));
   };
 
+  QuinnResponse.prototype.resolvedBody=function() {
+    if (this.$QuinnResponse0) return resolve(this.body);
+    return resolve(this.body).then(toStream);
+  };
+
   QuinnResponse.prototype.status=function(code) {
     return this.statusCode = code, this;
   };
 
   QuinnResponse.prototype.toJSON=function() {
-    return this.resolved().then(function(r)  {return r.body.toJSON();});
+    return this.resolvedBody().then(function(body)  {return body.toJSON();});
   };
 
   QuinnResponse.prototype.toBuffer=function() {
-    return this.resolved().then(function(r)  {return r.body.toBuffer();});
+    return this.resolvedBody().then(function(body)  {return body.toBuffer();});
   };
 
   QuinnResponse.prototype.pipe=function(res) {

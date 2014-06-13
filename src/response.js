@@ -2,7 +2,7 @@
 
 import caseless from 'caseless';
 import {all, resolve} from 'bluebird';
-import {zipObject, each} from 'lodash';
+import {zipObject, each, isObject} from 'lodash';
 import {toStream} from './body';
 
 function toArray(value) {
@@ -35,12 +35,19 @@ class QuinnResponse {
 
   resolved() {
     if (this._isResolved) return resolve(this);
-    return resolve(this.body).then(toStream).then( body => {
+    return this.resolvedBody().then( body => {
       if (!this.hasHeader('Content-Type'))
         this.header('Content-Type', 'text/plain; charset=utf-8');
 
       if (typeof body.getByteSize === 'function') {
         this.header('Content-Length', body.getByteSize());
+      } else {
+        // TODO: Handle content-length for other kinds of streams..?
+      }
+
+      if (isObject(body.headers)) {
+        // TODO: Assume this is an attempt to pipe through in incoming response
+        // Important: exclude Host, Content-Length, and other dangerous headers
       }
 
       return resolvedHeaders(this.headers.dict).then(
@@ -53,16 +60,21 @@ class QuinnResponse {
     });
   }
 
+  resolvedBody() {
+    if (this._isResolved) return resolve(this.body);
+    return resolve(this.body).then(toStream);
+  }
+
   status(code) {
     return this.statusCode = code, this;
   }
 
   toJSON() {
-    return this.resolved().then(r => r.body.toJSON());
+    return this.resolvedBody().then(body => body.toJSON());
   }
 
   toBuffer() {
-    return this.resolved().then(r => r.body.toBuffer());
+    return this.resolvedBody().then(body => body.toBuffer());
   }
 
   pipe(res) {
