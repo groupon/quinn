@@ -1,12 +1,13 @@
+'use strict';
 
 var parseUrl = require('url').parse;
 
-function parseRequestUrl(req, next) {
+function parseRequestUrl(req) {
   var patchedReq = req;
 
-  var parsed = req.parsedUrl = parseUrl(req.url, true);
-  req.pathname = parsed.pathname;
-  req.query = parsed.query;
+  var parsed = patchedReq.parsedUrl = parseUrl(req.url, true);
+  patchedReq.pathname = parsed.pathname;
+  patchedReq.query = parsed.query;
 
-  return next(patchedReq);
+  return patchedReq;
 } module.exports.parseRequestUrl = parseRequestUrl;

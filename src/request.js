@@ -1,12 +1,13 @@
+'use strict';
 
 import { parse as parseUrl } from 'url';
 
-export function parseRequestUrl(req, next) {
+export function parseRequestUrl(req) {
   var patchedReq = req;
 
-  var parsed = req.parsedUrl = parseUrl(req.url, true);
-  req.pathname = parsed.pathname;
-  req.query = parsed.query;
+  var parsed = patchedReq.parsedUrl = parseUrl(req.url, true);
+  patchedReq.pathname = parsed.pathname;
+  patchedReq.query = parsed.query;
 
-  return next(patchedReq);
+  return patchedReq;
 }

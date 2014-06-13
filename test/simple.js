@@ -8,14 +8,16 @@ var Promise = require('bluebird');
 
 var quinn = require('../');
 var routes = quinn.routes;
+var getCookie = require('../dist/cookies').getCookie;
 
 describe('quinn.boots', function() {
   describe('starting a simple server', function() {
     var server = null;
     it('starts', function(done) {
       server = http.createServer(quinn(routes(function(app) {
-        app.GET('/test', function() {
-          return 'ok';
+        app.GET('/test', function(req) {
+          var myCookie = getCookie(req, 'foo');
+          return req.query.a + ' ' + myCookie;
         });
         app.GET('/throws', function() {
           throw new Error('Fatality');
@@ -29,8 +31,14 @@ describe('quinn.boots', function() {
 
     function getPath(path) {
       return new Promise(function(resolve, reject) {
-        var url = 'http://127.0.0.1:' + server.address().port + path;
-        http.get(url)
+        http.get({
+          host: '127.0.0.1',
+          port: server.address().port,
+          path: path,
+          headers: {
+            Cookie: 'foo=zapp; bar=xyz'
+          }
+        })
         .on('response', function(res) {
           resolve(res);
         })
@@ -55,7 +63,11 @@ describe('quinn.boots', function() {
         .then(function(res) {
           assert.equal(res.statusCode, 200);
           assert.equal(res.headers['content-type'], 'text/plain');
-          assert.equal(res.headers['content-length'], '2');
+          assert.equal(res.headers['content-length'], '7');
+          return readBody(res);
+        })
+        .then(function(body) {
+          assert.equal(body, 'ok zapp');
         })
       );
     });

@@ -9,8 +9,9 @@ default: build
 build: $(DIST)
 
 dist/%.js: src/%.js build/compile.js
-	dirname "$@" | xargs mkdir -p
-	$(COMPILE) <"$<" >"$@"
+	@echo "Compiling $@"
+	@dirname "$@" | xargs mkdir -p
+	@$(COMPILE) <"$<" >"$@"
 
 # This will fail if there are unstaged changes in the checkout
 check-checkout-clean:
@@ -20,4 +21,4 @@ test: build
 	@./node_modules/.bin/mocha
 
 watch:
-	@./node_modules/.bin/wach -o "src/**/*.js" "make test"
+	@./node_modules/.bin/reakt -g "{src,test}/**/*.js" "make test"

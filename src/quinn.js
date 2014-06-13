@@ -3,7 +3,7 @@
 import {STATUS_CODES} from 'http';
 
 import Promise from 'bluebird';
-import {partial, each} from 'lodash';
+import {partial, each, clone} from 'lodash';
 
 import {routes} from './router';
 import {parseRequestUrl} from './request';
@@ -14,79 +14,112 @@ function pipeHeaders(src, dest) {
   });
 }
 
-function pipeResponse(req, destination, pass, response) {
-  if (response === undefined) {
-    if (typeof pass === 'function') {
-      pass();
-      return;
-    } else {
-      response = NotFound(req);
-    }
-  }
-  // send response
-  if (typeof response === 'string') {
-    response = PlainText(200, new Buffer(response, 'utf8'));
-  } else if (typeof response === 'number') {
-    response = PlainText(response, new Buffer(
-      STATUS_CODES[response],
-      'utf8'
-    ));
-  }
+function pipeResponse(destination, response) {
+  if (response === undefined) return;
+
+  // Send response
   destination.statusCode = response.statusCode;
   pipeHeaders(response, destination);
   destination.end(response.body);
 }
 
 function defaultErrorHandler(req, err) {
-  return ServerError(req, err.stack);
+  return {
+    statusCode: 500,
+    body: err.stack
+  };
 }
 
-export default function quinn(handler, errorHandler) {
+function defaultFatalHandler(req, err) {
+  setTimeout(() => {
+    throw err;
+  });
+}
+
+export default function quinn(handler, errorHandler, fatalHandler) {
   if (typeof reportError !== 'function') {
     errorHandler = defaultErrorHandler;
   }
 
+  if (typeof fatalHandler !== 'function') {
+    fatalHandler = defaultFatalHandler;
+  }
+
   return function handleRequest(req, destination, pass) {
-    Promise.try(partial(parseRequestUrl, req, handler))
-    .catch(function(err) {
-      if (typeof pass !== 'function') {
-        return errorHandler(req, err);
+    var hasPass = typeof pass === 'function';
+    Promise.try(parseRequestUrl, [req])
+    .then(handler)
+    .then(
+      function(response) {
+        if (response === undefined) {
+          if (hasPass) {
+            return pass(), undefined;
+          } else {
+            return NotFound(req);
+          }
+        } else {
+          return response;
+        }
+      },
+      function(err) {
+        if (!hasPass) {
+          return errorHandler(req, err);
+        } else {
+          return Promise.reject(err);
+        }
       }
-      return Promise.reject(err);
-    })
-    .then(partial(pipeResponse, req, destination, pass))
+    )
+    .then(applyResponseDefaults)
+    .then(partial(pipeResponse, destination))
     .catch(pass)
-    .nodeify(function(err) {
-      if (err) throw err;
-    });
+    .catch(partial(fatalHandler, req))
+    .catch(partial(defaultFatalHandler, req));
   };
 }
 
-export function PlainText(statusCode, body) {
-  if (!Buffer.isBuffer(body)) {
-    body = new Buffer(body);
+export function applyResponseDefaults(response) {
+  if (response === undefined) return;
+
+  if (typeof response === 'string') {
+    response = { body: new Buffer(response, 'utf8') };
+  } else if (Buffer.isBuffer(response)) {
+    response = { body: response };
+  } else if (typeof response === 'number') {
+    response = {
+      statusCode: response,
+      body: new Buffer(STATUS_CODES[response], 'ascii')
+    };
+  }
+
+  var body = response.body || new Buffer();
+  var bodyIsStream = typeof body.pipe === 'function';
+  if (!bodyIsStream && !Buffer.isBuffer(body)) {
+    body = new Buffer(body, 'utf8');
+  }
+
+  var headers = response.headers ? clone(response.headers) : {};
+  var statusCode = response.statusCode || 200;
+
+  if (!headers['Content-Type']) {
+    headers['Content-Type'] = 'text/plain';
+  }
+
+  if (!bodyIsStream && !headers['Content-Length']) {
+    headers['Content-Length'] = body.length;
   }
 
   return {
     statusCode: statusCode,
-    headers: {
-      'Content-Type': 'text/plain',
-      'Content-Length': body.length
-    },
+    headers: headers,
     body: body
   };
 }
 
 export function NotFound(req) {
-  return PlainText(
-    404, 'Cannot ' + req.method + ' ' + req.url
-  );
-}
-
-export function ServerError(req, body) {
-  return PlainText(
-    500, body
-  );
+  return {
+    statusCode: 404,
+    body: 'Cannot ' + req.method + ' ' + req.url
+  };
 }
 
 export {routes};
