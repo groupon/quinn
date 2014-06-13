@@ -5,7 +5,7 @@ var partial = require('lodash').partial;
 
 var routes = require('./router').routes;
 var parseRequestUrl = require('./request').parseRequestUrl;
-var toResponse = require('./response').toResponse;
+var respond = require('./respond');
 
 function pipeTo(target, src) {
   if (src === undefined) return;
@@ -68,7 +68,7 @@ module.exports = function quinn(handler, errorHandler, fatalHandler) {
       gracefulRespond,
       gracefulError
     )
-    .then(toResponse)
+    .then(respond)
     .then(function(r)  {return r.resolved();})
     .then(partial(pipeTo, destination))
     .then(forward, pass)
@@ -77,14 +77,12 @@ module.exports = function quinn(handler, errorHandler, fatalHandler) {
   };
 }
 
-module.exports.toResponse = toResponse;
-
 function ServerError(props) {
-  return toResponse(props).status(500);
+  return respond(props).status(500);
 } module.exports.ServerError = ServerError;
 
 function NotFound(props) {
-  return toResponse(props).status(404);
+  return respond(props).status(404);
 } module.exports.NotFound = NotFound;
 
-module.exports.routes = routes;
+module.exports.routes = routes;module.exports.respond = respond;

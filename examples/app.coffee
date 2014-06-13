@@ -1,7 +1,9 @@
 {createServer} = require 'http'
 
+{all} = require 'bluebird'
+
 quinn = require '../'
-{routes} = quinn
+{routes, respond} = quinn
 
 server = createServer quinn routes ({GET}) ->
   GET '/', ->
@@ -14,8 +16,21 @@ server = createServer quinn routes ({GET}) ->
     'bar'
 
   GET '/json', ->
-    statusCode: 400
-    headers: { 'Content-Type': 'application/json' }
-    body: JSON.stringify(error: 'Invalid parameters')
+    respond.json(error: 'Invalid parameters')
+      .status 400
+
+  GET '/nested', ->
+    all([
+      # This simulates return values from other actions
+      respond.json a: 42
+      respond 'foo'
+    ])
+    .spread (data, text) -> {
+      data,
+      text,
+      now: new Date(),
+      r: [ /foo/, /bar/g ]
+    }
+    .then respond.json
 
 server.listen process.env.PORT || 3000

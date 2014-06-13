@@ -5,7 +5,7 @@ import {partial} from 'lodash';
 
 import {routes} from './router';
 import {parseRequestUrl} from './request';
-import {toResponse} from './response';
+import respond from './respond';
 
 function pipeTo(target, src) {
   if (src === undefined) return;
@@ -68,7 +68,7 @@ export default function quinn(handler, errorHandler, fatalHandler) {
       gracefulRespond,
       gracefulError
     )
-    .then(toResponse)
+    .then(respond)
     .then(r => r.resolved())
     .then(partial(pipeTo, destination))
     .then(forward, pass)
@@ -77,14 +77,12 @@ export default function quinn(handler, errorHandler, fatalHandler) {
   };
 }
 
-export {toResponse};
-
 export function ServerError(props) {
-  return toResponse(props).status(500);
+  return respond(props).status(500);
 }
 
 export function NotFound(props) {
-  return toResponse(props).status(404);
+  return respond(props).status(404);
 }
 
-export {routes};
+export {routes, respond};

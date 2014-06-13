@@ -8,7 +8,7 @@
 
 import {Readable} from 'readable-stream';
 
-class BufferReadStream extends Readable {
+class BufferBody extends Readable {
   constructor(buffer, opts) {
     super(opts);
     this._buffer = buffer;
@@ -17,6 +17,14 @@ class BufferReadStream extends Readable {
   _read() {
     this.push(this._buffer);
     this._buffer = null;
+  }
+
+  toJSON() {
+    return this._buffer.toString('utf8');
+  }
+
+  toBuffer() {
+    return this._buffer;
   }
 
   getByteSize() {
@@ -28,4 +36,4 @@ class BufferReadStream extends Readable {
   }
 }
 
-export default BufferReadStream;
+export default BufferBody;

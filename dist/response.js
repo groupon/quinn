@@ -1,9 +1,7 @@
 'use strict';
 
-var STATUS_CODES = require('http').STATUS_CODES;
-
 var caseless = require('caseless');
-var mod$0 = require('bluebird');var isPromise = mod$0.isPromise;var all = mod$0.all;
+var mod$0 = require('bluebird');var all = mod$0.all;var resolve = mod$0.resolve;
 var mod$1 = require('lodash');var zipObject = mod$1.zipObject;var each = mod$1.each;
 var toStream = require('./body').toStream;
 
@@ -31,36 +29,40 @@ function resolvedHeaders(headers) {
     this.statusCode = props.statusCode || 200;
     this.headers = caseless(props.headers || {});
     this.body = props.body || null; // null === empty body
-    this.$QuinnResponse0 = !!isResolved;
 
-    if (this.$QuinnResponse0)
-      this.$QuinnResponse1();
+    this.$QuinnResponse0 = !!isResolved;
   }
 
   QuinnResponse.prototype.resolved=function() {
-    return all([
-      this.statusCode,
-      resolvedHeaders(this.headers.dict),
-      this.body
-    ]).spread( function(statusCode, headers, body)  {
-      return new QuinnResponse({
-        statusCode: statusCode,
-        headers: headers,
-        body: toStream(body)
-      }, true);
-    });
-  };
+    if (this.$QuinnResponse0) return resolve(this);
+    return resolve(this.body).then(toStream).then( function(body)  {
+      if (!this.hasHeader('Content-Type'))
+        this.header('Content-Type', 'text/plain; charset=utf-8');
 
-  QuinnResponse.prototype.$QuinnResponse1=function() {
-    if (!this.hasHeader('Content-Type'))
-      this.header('Content-Type', 'text/plain; charset=utf-8');
+      if (typeof body.getByteSize === 'function') {
+        this.header('Content-Length', body.getByteSize());
+      }
 
-    if (this.body !== null && typeof this.body.getByteSize === 'function')
-      this.header('Content-Length', this.body.getByteSize());
+      return resolvedHeaders(this.headers.dict).then(
+        function(headers)  {return new QuinnResponse({
+          statusCode: this.statusCode,
+          headers: headers,
+          body: body
+        }, true);}.bind(this)
+      );
+    }.bind(this));
   };
 
   QuinnResponse.prototype.status=function(code) {
     return this.statusCode = code, this;
+  };
+
+  QuinnResponse.prototype.toJSON=function() {
+    return this.resolved().then(function(r)  {return r.body.toJSON();});
+  };
+
+  QuinnResponse.prototype.toBuffer=function() {
+    return this.resolved().then(function(r)  {return r.body.toBuffer();});
   };
 
   QuinnResponse.prototype.pipe=function(res) {
@@ -83,38 +85,17 @@ function resolvedHeaders(headers) {
   };
 
   QuinnResponse.prototype.header=function(name, value) {
-    return this.headers.set(name, value), this;
+    if (value === undefined)
+      return this.headers.del(name), this;
+    else
+      return this.headers.set(name, value), this;
   };
 
   QuinnResponse.prototype.addHeader=function(name, value) {
     var oldValue = this.headers.get(name);
-    if (isPromise(oldValue) || isPromise(value)) {
-      this.headers.set(
-        name,
-        all(oldValue, value).spread(concatHeaders)
-      );
-    } else {
-      this.headers.set(name, concatHeaders(oldValue, value));
-    }
+    this.headers.set(name, all(oldValue, value).spread(concatHeaders));
     return this;
   };
-module.exports.QuinnResponse = QuinnResponse;
 
-function toResponse(props) {
-  if (props === undefined) {
-    return;
-  } else if (props instanceof QuinnResponse) {
-    return props;
-  } else if (Buffer.isBuffer(props)) {
-    return new QuinnResponse({ body: props });
-  } else if (typeof props === 'number') {
-    return new QuinnResponse({
-      statusCode: props,
-      body: new Buffer(STATUS_CODES[props], 'ascii')
-    });
-  } else if (typeof props === 'object' && props !== null){
-    return new QuinnResponse(props);
-  } else {
-    return new QuinnResponse({ body: new Buffer(props, 'utf8') });
-  }
-} module.exports.toResponse = toResponse;
+
+module.exports = QuinnResponse;

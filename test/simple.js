@@ -8,6 +8,7 @@ var Promise = require('bluebird');
 
 var quinn = require('../');
 var routes = quinn.routes;
+var respond = quinn.respond;
 var getCookie = require('../dist/cookies').getCookie;
 
 var DEFAULT_TYPE = 'text/plain; charset=utf-8';
@@ -25,7 +26,7 @@ describe('quinn.boots', function() {
           throw new Error('Fatality');
         });
         app.GET('/hello/{name}', function(req) {
-          return 'Hello, ' + req.params.name + '!';
+          return respond('Hello, ' + req.params.name + '!').status(201);
         });
       })));
       server.listen(0, done);
@@ -108,7 +109,7 @@ describe('quinn.boots', function() {
       return (
         getPath('/hello/world')
         .then(function(res) {
-          assert.equal(res.statusCode, 200);
+          assert.equal(res.statusCode, 201);
           assert.equal(res.headers['content-type'], DEFAULT_TYPE);
           assert(res.headers['content-length']);
           return readBody(res);
