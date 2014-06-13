@@ -17,9 +17,9 @@ function getCookie(req, name) {
 } module.exports.getCookie = getCookie;
 
 function setCookie(res, name, value, opts) {
-  return res;
+  return opts, res;
 } module.exports.setCookie = setCookie;
 
 function setCookies(res, cookieMap) {
-  return res;
+  return cookieMap, res;
 } module.exports.setCookies = setCookies;

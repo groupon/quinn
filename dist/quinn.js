@@ -17,7 +17,7 @@ function defaultErrorHandler(req, err) {
   if (err) {
     return ServerError(err.stack);
   } else {
-    return NotFound('Cannot ' + req.method + ' ' + req.url + '\n');
+    return NotFound(("Cannot " + req.method + " " + req.url + "\n"));
   }
 }
 

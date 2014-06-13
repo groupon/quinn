@@ -5,7 +5,7 @@ COMPILE = ./build/compile.js
 
 default: build
 
-.PHONY: build test check-checkout-clean clean
+.PHONY: build test check-checkout-clean clean clean-dist lint
 build: $(DIST)
 
 dist/%.js: src/%.js build/compile.js node_modules
@@ -23,8 +23,14 @@ test: build node_modules
 node_modules: package.json
 	npm install
 
-clean:
-	rm -rf node_modules dist
+lint: build
+	@./node_modules/.bin/jshint src
+
+clean-dist:
+	rm -rf dist
+
+clean: clean-dist
+	rm -rf node_modules
 
 watch: node_modules
 	@./node_modules/.bin/reakt -g "{src,test,build}/**/*.js" "make test"

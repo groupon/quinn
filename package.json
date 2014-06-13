@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/quinn.js",
   "scripts": {
-    "test": "make test check-checkout-clean"
+    "test": "make clean-dist lint test check-checkout-clean"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "coffee-script": "^1.7.1",
     "concat-stream": "^1.4.5",
     "es6-module-jstransform": "^0.1.4",
+    "jshint": "~2.5.1",
     "jstransform": "^5.0.0",
     "mocha": "^1.20.0",
     "reakt": "0.0.5"
