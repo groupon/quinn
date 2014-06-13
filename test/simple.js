@@ -99,7 +99,7 @@ describe('quinn.boots', function() {
           return readBody(res);
         })
         .then(function(body) {
-          assert.equal(body, 'Cannot GET /nirvana');
+          assert.equal(body, 'Cannot GET /nirvana\n');
         })
       );
     });
