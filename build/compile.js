@@ -1,6 +1,16 @@
 #!/usr/bin/env node
-var es6ArrowFuncVisitors = require('jstransform/visitors/es6-arrow-function-visitors').visitorList;
-var es6ClassVisitors = require('jstransform/visitors/es6-class-visitors').visitorList;
+'use strict';
+
+function getDefaultVisitors(name) {
+  return (
+    require(
+      'jstransform/visitors/es6-' + name + '-visitors'
+    ).visitorList
+  );
+}
+
+var arrow = getDefaultVisitors('arrow-function');
+var classes = getDefaultVisitors('class');
 var transform = require('es6-module-jstransform');
 var concat = require('concat-stream');
 
@@ -8,8 +18,8 @@ process.stdin.pipe(concat(function(data) {
   var transformed = transform(data.toString('utf8'), {
     sourceMap: false
   }, [].concat(
-    es6ClassVisitors,
-    es6ArrowFuncVisitors
+    arrow,
+    classes
   ));
   process.stdout.write(transformed.code);
 }));
