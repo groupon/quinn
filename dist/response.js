@@ -53,13 +53,13 @@ function resolvedHeaders(headers) {
 
   QuinnResponse.prototype.$QuinnResponse1=function() {
     if (!this.hasHeader('Content-Type'))
-      this.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      this.header('Content-Type', 'text/plain; charset=utf-8');
 
     if (this.body !== null && this.body.getByteSize)
-      this.setHeader('Content-Length', this.body.getByteSize());
+      this.header('Content-Length', this.body.getByteSize());
   };
 
-  QuinnResponse.prototype.setStatusCode=function(code) {
+  QuinnResponse.prototype.status=function(code) {
     return this.statusCode = code, this;
   };
 
@@ -82,7 +82,7 @@ function resolvedHeaders(headers) {
     return this.headers.get(name);
   };
 
-  QuinnResponse.prototype.setHeader=function(name, value) {
+  QuinnResponse.prototype.header=function(name, value) {
     return this.headers.set(name, value), this;
   };
 

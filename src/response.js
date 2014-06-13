@@ -53,13 +53,13 @@ export class QuinnResponse {
 
   _ensureDefaults() {
     if (!this.hasHeader('Content-Type'))
-      this.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      this.header('Content-Type', 'text/plain; charset=utf-8');
 
     if (this.body !== null && this.body.getByteSize)
-      this.setHeader('Content-Length', this.body.getByteSize());
+      this.header('Content-Length', this.body.getByteSize());
   }
 
-  setStatusCode(code) {
+  status(code) {
     return this.statusCode = code, this;
   }
 
@@ -82,7 +82,7 @@ export class QuinnResponse {
     return this.headers.get(name);
   }
 
-  setHeader(name, value) {
+  header(name, value) {
     return this.headers.set(name, value), this;
   }
 

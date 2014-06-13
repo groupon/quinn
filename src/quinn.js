@@ -80,11 +80,11 @@ export default function quinn(handler, errorHandler, fatalHandler) {
 export {toResponse};
 
 export function ServerError(props) {
-  return toResponse(props).setStatusCode(500);
+  return toResponse(props).status(500);
 }
 
 export function NotFound(props) {
-  return toResponse(props).setStatusCode(404);
+  return toResponse(props).status(404);
 }
 
 export {routes};
