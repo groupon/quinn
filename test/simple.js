@@ -10,6 +10,8 @@ var quinn = require('../');
 var routes = quinn.routes;
 var getCookie = require('../dist/cookies').getCookie;
 
+var DEFAULT_TYPE = 'text/plain; charset=utf-8';
+
 describe('quinn.boots', function() {
   describe('starting a simple server', function() {
     var server = null;
@@ -62,7 +64,7 @@ describe('quinn.boots', function() {
         getPath('/test?a=ok')
         .then(function(res) {
           assert.equal(res.statusCode, 200);
-          assert.equal(res.headers['content-type'], 'text/plain');
+          assert.equal(res.headers['content-type'], DEFAULT_TYPE);
           assert.equal(res.headers['content-length'], '7');
           return readBody(res);
         })
@@ -77,7 +79,7 @@ describe('quinn.boots', function() {
         getPath('/throws')
         .then(function(res) {
           assert.equal(res.statusCode, 500);
-          assert.equal(res.headers['content-type'], 'text/plain');
+          assert.equal(res.headers['content-type'], DEFAULT_TYPE);
           assert(res.headers['content-length']);
           return readBody(res);
         })
@@ -92,7 +94,7 @@ describe('quinn.boots', function() {
         getPath('/nirvana')
         .then(function(res) {
           assert.equal(res.statusCode, 404);
-          assert.equal(res.headers['content-type'], 'text/plain');
+          assert.equal(res.headers['content-type'], DEFAULT_TYPE);
           assert(res.headers['content-length']);
           return readBody(res);
         })
@@ -107,7 +109,7 @@ describe('quinn.boots', function() {
         getPath('/hello/world')
         .then(function(res) {
           assert.equal(res.statusCode, 200);
-          assert.equal(res.headers['content-type'], 'text/plain');
+          assert.equal(res.headers['content-type'], DEFAULT_TYPE);
           assert(res.headers['content-length']);
           return readBody(res);
         })

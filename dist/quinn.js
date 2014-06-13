@@ -1,39 +1,38 @@
 'use strict';
 
-var STATUS_CODES = require('http').STATUS_CODES;
-
 var Promise = require('bluebird');
-var mod$0 = require('lodash');var partial = mod$0.partial;var each = mod$0.each;var clone = mod$0.clone;
+var partial = require('lodash').partial;
 
 var routes = require('./router').routes;
 var parseRequestUrl = require('./request').parseRequestUrl;
+var toResponse = require('./response').toResponse;
 
-function pipeHeaders(src, dest) {
-  each(src.headers, function(header, name)  {
-    dest.setHeader(name, header);
-  });
-}
-
-function pipeResponse(destination, response) {
-  if (response === undefined) return;
-
-  // Send response
-  destination.statusCode = response.statusCode;
-  pipeHeaders(response, destination);
-  destination.end(response.body);
+function pipeTo(target, src) {
+  if (src === undefined) return;
+  src.pipe(target);
+  return src;
 }
 
 function defaultErrorHandler(req, err) {
-  return {
-    statusCode: 500,
-    body: err.stack
-  };
+  if (err) {
+    return ServerError(err.stack);
+  } else {
+    return NotFound('Cannot ' + req.method + ' ' + req.url);
+  }
 }
 
 function defaultFatalHandler(req, err) {
   setTimeout(function()  {
     throw err;
   });
+}
+
+function callIfUndefined(fn, value) {
+  if (value === undefined) {
+    return fn();
+  } else {
+    return value;
+  }
 }
 
 module.exports = function quinn(handler, errorHandler, fatalHandler) {
@@ -47,79 +46,45 @@ module.exports = function quinn(handler, errorHandler, fatalHandler) {
 
   return function handleRequest(req, destination, pass) {
     var hasPass = typeof pass === 'function';
+    var gracefulError = (
+      (errorHandler && partial(errorHandler, req)) ||
+      (!hasPass && partial(defaultErrorHandler, req)) ||
+      undefined
+    );
+
+    var gracefulRespond = (
+      (gracefulError && partial(callIfUndefined, gracefulError)) ||
+      undefined
+    );
+
+    var forward = (
+      (hasPass && partial(callIfUndefined, pass)) ||
+      undefined
+    );
+
     Promise.try(parseRequestUrl, [req])
     .then(handler)
     .then(
-      function(response) {
-        if (response === undefined) {
-          if (hasPass) {
-            return pass(), undefined;
-          } else {
-            return NotFound(req);
-          }
-        } else {
-          return response;
-        }
-      },
-      function(err) {
-        if (!hasPass) {
-          return errorHandler(req, err);
-        } else {
-          return Promise.reject(err);
-        }
-      }
+      gracefulRespond,
+      gracefulError
     )
-    .then(applyResponseDefaults)
-    .then(partial(pipeResponse, destination))
-    .catch(pass)
+    .then(toResponse)
+    .then(function(r)  {return r.resolved();})
+    .then(partial(pipeTo, destination))
+    .then(forward, pass)
     .catch(partial(fatalHandler, req))
     .catch(partial(defaultFatalHandler, req));
   };
 }
 
-function applyResponseDefaults(response) {
-  if (response === undefined) return;
+module.exports.toResponse = toResponse;
 
-  if (typeof response === 'string') {
-    response = { body: new Buffer(response, 'utf8') };
-  } else if (Buffer.isBuffer(response)) {
-    response = { body: response };
-  } else if (typeof response === 'number') {
-    response = {
-      statusCode: response,
-      body: new Buffer(STATUS_CODES[response], 'ascii')
-    };
-  }
+function ServerError(props) {
+  return toResponse(props).setStatusCode(500);
+} module.exports.ServerError = ServerError;
 
-  var body = response.body || new Buffer();
-  var bodyIsStream = typeof body.pipe === 'function';
-  if (!bodyIsStream && !Buffer.isBuffer(body)) {
-    body = new Buffer(body, 'utf8');
-  }
-
-  var headers = response.headers ? clone(response.headers) : {};
-  var statusCode = response.statusCode || 200;
-
-  if (!headers['Content-Type']) {
-    headers['Content-Type'] = 'text/plain';
-  }
-
-  if (!bodyIsStream && !headers['Content-Length']) {
-    headers['Content-Length'] = body.length;
-  }
-
-  return {
-    statusCode: statusCode,
-    headers: headers,
-    body: body
-  };
-} module.exports.applyResponseDefaults = applyResponseDefaults;
-
-function NotFound(req) {
-  return {
-    statusCode: 404,
-    body: 'Cannot ' + req.method + ' ' + req.url
-  };
+function NotFound(props) {
+  return toResponse(props).setStatusCode(404);
 } module.exports.NotFound = NotFound;
 
 module.exports.routes = routes;

@@ -9,17 +9,20 @@ function getDefaultVisitors(name) {
   );
 }
 
+var transform = require('jstransform').transform;
 var arrow = getDefaultVisitors('arrow-function');
 var classes = getDefaultVisitors('class');
-var transform = require('es6-module-jstransform');
+var modules = require('es6-module-jstransform').visitorList;
 var concat = require('concat-stream');
 
 process.stdin.pipe(concat(function(data) {
-  var transformed = transform(data.toString('utf8'), {
-    sourceMap: false
-  }, [].concat(
+  var transformed = transform([].concat(
+    modules,
     arrow,
     classes
-  ));
+  ), data.toString('utf8'), {
+    sourceMap: false,
+    minify: true
+  });
   process.stdout.write(transformed.code);
 }));

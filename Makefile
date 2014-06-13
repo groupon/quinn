@@ -5,11 +5,11 @@ COMPILE = ./build/compile.js
 
 default: build
 
-.PHONY: build test check-checkout-clean
+.PHONY: build test check-checkout-clean clean
 build: $(DIST)
 
-dist/%.js: src/%.js build/compile.js
-	@echo "Compiling $@"
+dist/%.js: src/%.js build/compile.js node_modules
+	@echo "Compiling $< -> $@"
 	@dirname "$@" | xargs mkdir -p
 	@$(COMPILE) <"$<" >"$@"
 
@@ -17,8 +17,14 @@ dist/%.js: src/%.js build/compile.js
 check-checkout-clean:
 	git diff --exit-code
 
-test: build
+test: build node_modules
 	@./node_modules/.bin/mocha
 
-watch:
-	@./node_modules/.bin/reakt -g "{src,test}/**/*.js" "make test"
+node_modules: package.json
+	npm install
+
+clean:
+	rm -rf node_modules dist
+
+watch: node_modules
+	@./node_modules/.bin/reakt -g "{src,test,build}/**/*.js" "make test"
