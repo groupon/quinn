@@ -3,7 +3,7 @@
 var STATUS_CODES = require('http').STATUS_CODES;
 
 var QuinnResponse = require('./response');
-var JSONBody = require('./body/json');
+var JSONBody = require('./body').JSONBody;
 
 function respond(props) {
   if (props === undefined) {

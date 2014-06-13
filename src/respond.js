@@ -3,7 +3,7 @@
 import {STATUS_CODES} from 'http';
 
 import QuinnResponse from './response';
-import JSONBody from './body/json';
+import {JSONBody} from './body';
 
 function respond(props) {
   if (props === undefined) {
