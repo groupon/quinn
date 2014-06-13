@@ -36,8 +36,8 @@ function callIfUndefined(fn, value) {
 }
 
 module.exports = function quinn(handler, errorHandler, fatalHandler) {
-  if (typeof reportError !== 'function') {
-    errorHandler = defaultErrorHandler;
+  if (typeof errorHandler !== 'function') {
+    errorHandler = undefined;
   }
 
   if (typeof fatalHandler !== 'function') {
