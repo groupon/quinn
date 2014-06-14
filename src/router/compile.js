@@ -59,14 +59,14 @@ export function _compileRoute(pattern) {
 
 var compileRoute = memoize(_compileRoute);
 
-export function matchRoute(req, method, pattern) {
-  if (method !== 'ALL' && req.method !== method) {
+export function matchRoute(reqMethod, parsedUrl, method, pattern) {
+  if (method !== 'ALL' && reqMethod !== method) {
     return null;
   }
 
-  var params = compileRoute(pattern)(req.pathname);
+  var params = compileRoute(pattern)(parsedUrl.pathname);
   if (params !== null) {
-    return Object.create(req, { params: { value: params } });
+    return params;
   }
   return null;
 }

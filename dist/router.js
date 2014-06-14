@@ -1,6 +1,9 @@
 'use strict';
 
+var parseUrl = require('url').parse;
+
 var matchRoute = require('./router/compile').matchRoute;
+var mod$0 = require('./context');var inRouteContext = mod$0.inRouteContext;var getFromRouteContext = mod$0.getFromRouteContext;
 
 var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
 
@@ -8,6 +11,8 @@ var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
   function Router(request) {
     this.$Router0 = request;
     this.$Router1 = undefined;
+
+    this.$Router2 = parseUrl(request.url, true);
 
     var verb, i;
     for (i = 0; i < HTTP_VERBS.length; ++i) {
@@ -28,9 +33,15 @@ var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
     }
 
     var req = this.$Router0;
-    var matchedReq = matchRoute(req, method, pattern);
-    if (matchedReq !== null) {
-      this.$Router1 = handler(matchedReq);
+    var params = matchRoute(req.method, this.$Router2, method, pattern);
+    if (params !== null) {
+      inRouteContext( function(ctx)  {
+        ctx.params = params;
+        ctx.parsedUrl = this.$Router2;
+        ctx.query = ctx.parsedUrl.query;
+        ctx.pathname = ctx.parsedUrl.pathname;
+        this.$Router1 = handler(req);
+      }.bind(this));
     }
     return this;
   };
@@ -43,3 +54,17 @@ function routes(routeDef) {
     return router.getResponse();
   };
 } module.exports.routes = routes;
+
+routes.getQuery = function(name) {
+  var query = getFromRouteContext('query');
+  if (name === undefined) return query;
+  return query[name];
+};
+
+routes.getParam = function(name) {
+  var params = getFromRouteContext('params');
+  if (name === undefined) return params;
+  return params[name];
+};
+
+routes.getParams = routes.getParam;

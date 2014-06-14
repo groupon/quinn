@@ -1,7 +1,7 @@
 'use strict';
 
 var caseless = require('caseless');
-var mod$0 = require('bluebird');var all = mod$0.all;var resolve = mod$0.resolve;
+var mod$0 = require('bluebird');var all = mod$0.all;var resolve = mod$0.resolve;var join = mod$0.join;
 var mod$1 = require('lodash');var zipObject = mod$1.zipObject;var each = mod$1.each;var isObject = mod$1.isObject;
 var toStream = require('./body').toStream;
 
@@ -11,7 +11,7 @@ function toArray(value) {
 
 function concatHeaders(old, newValue) {
   if (old === undefined) {
-    return newValue;
+    return toArray(newValue);
   }
   return toArray(old).concat(toArray(newValue));
 }
@@ -115,7 +115,7 @@ function resolvedHeaders(headers) {
 
   QuinnResponse.prototype.addHeader=function(name, value) {
     var oldValue = this.headers.get(name);
-    this.headers.set(name, all(oldValue, value).spread(concatHeaders));
+    this.headers.set(name, join(oldValue, value, concatHeaders));
     return this;
   };
 

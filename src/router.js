@@ -1,6 +1,9 @@
 'use strict';
 
+import { parse as parseUrl } from 'url';
+
 import {matchRoute} from './router/compile';
+import {inRouteContext, getFromRouteContext} from './context';
 
 var HTTP_VERBS = [ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD' ];
 
@@ -8,6 +11,8 @@ class Router {
   constructor(request) {
     this._request = request;
     this._response = undefined;
+
+    this._parsedUrl = parseUrl(request.url, true);
 
     var verb, i;
     for (i = 0; i < HTTP_VERBS.length; ++i) {
@@ -28,9 +33,15 @@ class Router {
     }
 
     var req = this._request;
-    var matchedReq = matchRoute(req, method, pattern);
-    if (matchedReq !== null) {
-      this._response = handler(matchedReq);
+    var params = matchRoute(req.method, this._parsedUrl, method, pattern);
+    if (params !== null) {
+      inRouteContext( ctx => {
+        ctx.params = params;
+        ctx.parsedUrl = this._parsedUrl;
+        ctx.query = ctx.parsedUrl.query;
+        ctx.pathname = ctx.parsedUrl.pathname;
+        this._response = handler(req);
+      });
     }
     return this;
   }
@@ -43,3 +54,17 @@ export function routes(routeDef) {
     return router.getResponse();
   };
 }
+
+routes.getQuery = function(name) {
+  var query = getFromRouteContext('query');
+  if (name === undefined) return query;
+  return query[name];
+};
+
+routes.getParam = function(name) {
+  var params = getFromRouteContext('params');
+  if (name === undefined) return params;
+  return params[name];
+};
+
+routes.getParams = routes.getParam;

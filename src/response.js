@@ -1,7 +1,7 @@
 'use strict';
 
 import caseless from 'caseless';
-import {all, resolve} from 'bluebird';
+import {all, resolve, join} from 'bluebird';
 import {zipObject, each, isObject} from 'lodash';
 import {toStream} from './body';
 
@@ -11,7 +11,7 @@ function toArray(value) {
 
 function concatHeaders(old, newValue) {
   if (old === undefined) {
-    return newValue;
+    return toArray(newValue);
   }
   return toArray(old).concat(toArray(newValue));
 }
@@ -115,7 +115,7 @@ class QuinnResponse {
 
   addHeader(name, value) {
     var oldValue = this.headers.get(name);
-    this.headers.set(name, all(oldValue, value).spread(concatHeaders));
+    this.headers.set(name, join(oldValue, value, concatHeaders));
     return this;
   }
 }

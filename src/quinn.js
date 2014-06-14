@@ -4,8 +4,9 @@ import Promise from 'bluebird';
 import {partial} from 'lodash';
 
 import {routes} from './router';
-import {parseRequestUrl} from './request';
 import respond from './respond';
+
+import {getRequestContextNS} from './context';
 
 function pipeTo(target, src) {
   if (src === undefined) return;
@@ -44,7 +45,7 @@ export default function quinn(handler, errorHandler, fatalHandler) {
     fatalHandler = defaultFatalHandler;
   }
 
-  return function handleRequest(req, destination, pass) {
+  return getRequestContextNS().bind(function handleRequest(req, res, pass) {
     var hasPass = typeof pass === 'function';
     var gracefulError = (
       (errorHandler && partial(errorHandler, req)) ||
@@ -62,19 +63,18 @@ export default function quinn(handler, errorHandler, fatalHandler) {
       undefined
     );
 
-    Promise.try(parseRequestUrl, [req])
-    .then(handler)
+    Promise.try(handler, [req])
     .then(
       gracefulRespond,
       gracefulError
     )
     .then(respond)
     .then(r => r.resolved())
-    .then(partial(pipeTo, destination))
+    .then(partial(pipeTo, res))
     .then(forward, pass)
     .catch(partial(fatalHandler, req))
     .catch(partial(defaultFatalHandler, req));
-  };
+  });
 }
 
 export function ServerError(props) {
