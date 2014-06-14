@@ -21,7 +21,7 @@ test: build node_modules
 	@./node_modules/.bin/mocha
 
 node_modules: package.json
-	npm install
+	@npm install
 
 lint: build
 	@./node_modules/.bin/jshint src
