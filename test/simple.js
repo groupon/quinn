@@ -79,9 +79,9 @@ describe('quinn.boots', function() {
       return (
         getPath('/test?a=ok')
         .then(function(res) {
-          // assert.equal(res.statusCode, 200);
-          // assert.equal(res.headers['content-type'], DEFAULT_TYPE);
-          // assert.equal(res.headers['content-length'], '7');
+          assert.equal(res.statusCode, 200);
+          assert.equal(res.headers['content-type'], DEFAULT_TYPE);
+          assert.equal(res.headers['content-length'], '7');
           return readBody(res);
         })
         .then(function(body) {
