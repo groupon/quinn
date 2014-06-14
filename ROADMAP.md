@@ -11,15 +11,20 @@
 * POC/smoke test suite
 
 
-## Now
-
 ### 2.0.0-pre2
 
 * Move out response into own module
 * Turn the response into a proper stream
 
 
+## Now
+
 ### 2.0.0-pre3
+
+* Move out compilation into own module
+
+
+### 2.0.0-pre4
 
 * Move out router into own module
 * Split the different CLS contexts (request/routing)
