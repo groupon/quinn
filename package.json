@@ -1,13 +1,16 @@
 {
-  "name": "quinn2",
+  "name": "quinn",
   "version": "2.0.0-pre1",
-  "description": "",
+  "description": "Maybe coming some day.",
   "main": "dist/quinn.js",
   "scripts": {
     "test": "make clean-dist lint test check-checkout-clean"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Jan Krems",
+    "email": "jan.krems@gmail.com>"
+  },
+  "license": "MIT",
   "dependencies": {
     "bluebird": "^2.1.1",
     "caseless": "^0.3.0",
@@ -24,5 +27,17 @@
     "jstransform": "^5.0.0",
     "mocha": "^1.20.1",
     "reakt": "0.0.5"
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jkrems/quinn2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jkrems/quinn2/issues"
+  },
+  "homepage": "https://github.com/jkrems/quinn2"
 }
