@@ -3,7 +3,8 @@
 {all} = require 'bluebird'
 
 quinn = require '../'
-{routes, respond} = quinn
+{routes} = quinn
+respond = require 'quinn-respond'
 
 server = createServer quinn routes ({GET}) ->
   GET '/', ->

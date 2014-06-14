@@ -12,7 +12,7 @@ var routes = quinn.routes;
 var getParam = routes.getParam;
 var getQuery = routes.getQuery;
 
-var respond = quinn.respond;
+var respond = require('quinn-respond');
 
 var Cookies = require('../dist/cookies');
 var getCookie = Cookies.getCookie;

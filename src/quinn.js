@@ -4,7 +4,7 @@ import Promise from 'bluebird';
 import {partial} from 'lodash';
 
 import {routes} from './router';
-import respond from './respond';
+import respond from 'quinn-respond';
 
 import {getRequestContextNS} from './context';
 

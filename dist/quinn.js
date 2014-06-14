@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 var partial = require('lodash').partial;
 
 var routes = require('./router').routes;
-var respond = require('./respond');
+var respond = require('quinn-respond');
 
 var getRequestContextNS = require('./context').getRequestContextNS;
 
