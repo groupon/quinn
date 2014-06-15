@@ -28,5 +28,10 @@ clean:
 	rm -rf dist
 	@cd node_modules/quinn-respond && make clean
 
+ALL_MODULES = $(shell find node_modules -mindepth 1 -maxdepth 1 -type d ! -name quinn-respond ! -name quinnc)
+reinstall:
+	@rm -r $(ALL_MODULES) || echo "Could not delete modules"
+	@npm install
+
 watch: node_modules
 	@./node_modules/.bin/reakt -g "{src,test,build}/**/*.js" "make test"
