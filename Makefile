@@ -1,7 +1,4 @@
-SRC = $(shell find src -name "*.js" -type f | sort)
-DIST = $(SRC:src/%.js=dist/%.js)
-
-COMPILE = ./build/compile.js
+COMPILE = ./node_modules/.bin/quinnc
 
 default: build
 
@@ -11,12 +8,8 @@ quinn-respond:
 	@cd node_modules/quinn-respond && make build
 
 .PHONY: build test check-checkout-clean clean clean-dist lint
-build: $(DIST) quinn-respond
-
-dist/%.js: src/%.js build/compile.js node_modules
-	@echo "Compiling $< -> $@"
-	@dirname "$@" | xargs mkdir -p
-	@$(COMPILE) <"$<" >"$@"
+build: quinn-respond
+	@$(COMPILE) src dist
 
 # This will fail if there are unstaged changes in the checkout
 check-checkout-clean:
