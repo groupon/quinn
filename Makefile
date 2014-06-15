@@ -3,8 +3,11 @@ COMPILE = ./node_modules/.bin/quinnc
 default: build
 
 # Upstream modules
-.PHONY: quinn-respond
-quinn-respond:
+.PHONY: quinnc quinn-respond
+quinnc:
+	@cd node_modules/quinnc && npm install --production
+
+quinn-respond: quinnc
 	@cd node_modules/quinn-respond && make build
 
 .PHONY: build test check-checkout-clean clean clean-dist lint
