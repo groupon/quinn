@@ -1,4 +1,4 @@
-/*global describe, it, after */
+/*global describe, it, after, xit */
 'use strict';
 
 var http = require('http');
@@ -8,9 +8,10 @@ var Bluebird = require('bluebird');
 
 var quinn = require('../');
 
-var routes = quinn.routes;
-var getParam = routes.getParam;
-var getQuery = routes.getQuery;
+var router = require('quinn-router');
+var route = router.route;
+var getParam = router.getParam;
+var getQuery = router.getQuery;
 
 var respond = require('quinn-respond');
 
@@ -24,7 +25,7 @@ describe('quinn.boots', function() {
   describe('starting a simple server', function() {
     var server = null;
     it('starts', function(done) {
-      server = http.createServer(quinn(routes(function(app) {
+      server = http.createServer(quinn(route(function(app) {
         app.GET('/test', function(req) {
           var myCookie = getCookie(req, 'foo');
           return getQuery('a') + ' ' + myCookie;
@@ -100,7 +101,8 @@ describe('quinn.boots', function() {
           return readBody(res);
         })
         .then(function(body) {
-          assert.equal(body.substr(0, 15), 'Error: Fatality');
+          var firstLine = body.split('\n').shift();
+          assert.equal(firstLine, 'Error: Fatality', body);
         })
       );
     });

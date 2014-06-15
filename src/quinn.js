@@ -3,7 +3,6 @@
 import Promise from 'bluebird';
 import {partial} from 'lodash';
 
-import {routes} from './router';
 import respond from 'quinn-respond';
 
 import {getRequestContextNS} from './context';
@@ -84,5 +83,3 @@ export function ServerError(props) {
 export function NotFound(props) {
   return respond(props).status(404);
 }
-
-export {routes, respond};

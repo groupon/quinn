@@ -10,8 +10,11 @@ quinnc:
 quinn-respond: quinnc
 	@cd node_modules/quinn-respond && make build
 
+quinn-router: quinnc
+	@cd node_modules/quinn-router && make build
+
 .PHONY: build test check-checkout-clean clean clean-dist lint
-build: quinn-respond
+build: quinn-respond quinn-router
 	@$(COMPILE) src dist
 
 # This will fail if there are unstaged changes in the checkout
@@ -31,7 +34,11 @@ clean:
 	rm -rf dist
 	@cd node_modules/quinn-respond && make clean
 
-ALL_MODULES = $(shell find node_modules -mindepth 1 -maxdepth 1 -type d ! -name quinn-respond ! -name quinnc)
+ALL_MODULES = $(shell find node_modules -mindepth 1 -maxdepth 1 -type d \
+											! -name quinn-respond \
+											! -name quinn-router \
+											! -name quinnc \
+											)
 reinstall:
 	@rm -r $(ALL_MODULES) || echo "Could not delete modules"
 	@npm install

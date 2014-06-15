@@ -3,7 +3,6 @@
 var Promise = require('bluebird');
 var partial = require('lodash').partial;
 
-var routes = require('./router').routes;
 var respond = require('quinn-respond');
 
 var getRequestContextNS = require('./context').getRequestContextNS;
@@ -84,5 +83,3 @@ function ServerError(props) {
 function NotFound(props) {
   return respond(props).status(404);
 } module.exports.NotFound = NotFound;
-
-module.exports.routes = routes;module.exports.respond = respond;

@@ -22,9 +22,14 @@
 * Move out compilation into own module (quinnc)
 
 
-## Now
-
 ### 2.0.0-pre4
 
 * Move out router into own module
 * Split the different CLS contexts (request/routing)
+
+
+## Now
+
+### 2.0.0-pre5
+
+* Rendering HTML pages with React integration
