@@ -26,6 +26,7 @@ lint: build
 
 clean:
 	rm -rf dist
+	@cd node_modules/quinn-respond && make clean
 
 watch: node_modules
 	@./node_modules/.bin/reakt -g "{src,test,build}/**/*.js" "make test"
