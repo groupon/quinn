@@ -17,12 +17,12 @@
 * Turn the response into a proper stream
 
 
-## Now
-
 ### 2.0.0-pre3
 
-* Move out compilation into own module
+* Move out compilation into own module (quinnc)
 
+
+## Now
 
 ### 2.0.0-pre4
 
