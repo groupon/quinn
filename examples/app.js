@@ -31,8 +31,7 @@ var app = route(function(router) {
         return {
           data: data,
           text: text,
-          now: new Date(),
-          r: [ /foo/, /bar/g ]
+          now: new Date()
         };
       })
       .then(respond.json);
