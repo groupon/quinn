@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^2.1.1",
+    "bluebird": "^2.1.2",
     "continuation-local-storage": "^3.0.0",
     "cookie": "^0.1.2",
     "lodash": "^2.4.1",
