@@ -1,4 +1,4 @@
-/*global describe, it, after, xit */
+/*global describe, it, after */
 'use strict';
 
 var http = require('http');
@@ -11,7 +11,6 @@ var quinn = require('../');
 var router = require('quinn.router');
 var route = router.route;
 var getParam = router.getParam;
-var getQuery = router.getQuery;
 
 var respond = require('quinn.respond');
 
@@ -28,14 +27,19 @@ describe('quinn.boots', function() {
       server = http.createServer(quinn(route(function(app) {
         app.GET('/test', function(req) {
           var myCookie = getCookie(req, 'foo');
-          return getQuery('a') + ' ' + myCookie;
+          return getParam('testParam') + ' ' + myCookie;
+        }, function(req, parsedUrl) {
+          return { testParam: parsedUrl.query.a };
         });
+
         app.GET('/throws', function() {
           throw new Error('Fatality');
         });
+
         app.GET('/hello/{name}', function() {
           return respond('Hello, ' + getParam('name') + '!').status(201);
         });
+
         app.GET('/cookie', function() {
           return setCookie(respond('ok'), 'name', 'jane', {
             maxAge: 3600,
