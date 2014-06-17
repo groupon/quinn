@@ -3,7 +3,7 @@
 import Promise from 'bluebird';
 import {partial} from 'lodash';
 
-import respond from 'quinn-respond';
+import respond from 'quinn.respond';
 
 import {getRequestContextNS} from './context';
 

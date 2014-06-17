@@ -3,18 +3,18 @@ COMPILE = ./node_modules/.bin/quinnc
 default: build
 
 # Upstream modules
-.PHONY: quinnc quinn-respond
+.PHONY: quinnc respond router
 quinnc:
 	@cd node_modules/quinnc && npm install --production
 
-quinn-respond: quinnc
-	@cd node_modules/quinn-respond && make build
+respond: quinnc
+	@cd node_modules/quinn.respond && make build
 
-quinn-router: quinnc
-	@cd node_modules/quinn-router && make build
+router: quinnc
+	@cd node_modules/quinn.router && make build
 
 .PHONY: build test check-checkout-clean clean clean-dist lint
-build: quinn-respond quinn-router
+build: respond router
 	@$(COMPILE) src dist
 
 # This will fail if there are unstaged changes in the checkout
@@ -32,11 +32,12 @@ lint: build
 
 clean:
 	rm -rf dist
-	@cd node_modules/quinn-respond && make clean
+	@cd node_modules/quinn.respond && make clean
+	@cd node_modules/quinn.router && make clean
 
 ALL_MODULES = $(shell find node_modules -mindepth 1 -maxdepth 1 -type d \
-											! -name quinn-respond \
-											! -name quinn-router \
+											! -name quinn.respond \
+											! -name quinn.router \
 											! -name quinnc \
 											)
 reinstall:

@@ -8,12 +8,12 @@ var Bluebird = require('bluebird');
 
 var quinn = require('../');
 
-var router = require('quinn-router');
+var router = require('quinn.router');
 var route = router.route;
 var getParam = router.getParam;
 var getQuery = router.getQuery;
 
-var respond = require('quinn-respond');
+var respond = require('quinn.respond');
 
 var Cookies = require('../dist/cookies');
 var getCookie = Cookies.getCookie;

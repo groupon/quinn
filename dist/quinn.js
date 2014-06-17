@@ -3,7 +3,7 @@
 var Promise = require('bluebird');
 var partial = require('lodash').partial;
 
-var respond = require('quinn-respond');
+var respond = require('quinn.respond');
 
 var getRequestContextNS = require('./context').getRequestContextNS;
 

@@ -6,9 +6,9 @@
 import {resolve} from 'bluebird';
 import React from 'react';
 
-import {getParam} from 'quinn'; // actually should be 'quinn-router'
-import respond from 'quinn-respond';
-import {BufferBody} from 'quinn-respond';
+import {getParam} from 'quinn.router';
+import respond from 'quinn.respond';
+import {BufferBody} from 'quinn.respond';
 
 function loadPost(postId) {
   return resolve({

@@ -28,8 +28,13 @@
 * Split the different CLS contexts (request/routing)
 
 
+### 2.0.0-pre5
+
+* Add a quinn CLI command for running an app
+
+
 ## Now
 
-### 2.0.0-pre5
+### 2.0.0-pre6
 
 * Rendering HTML pages with React integration
