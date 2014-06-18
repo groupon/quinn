@@ -6,7 +6,6 @@ var router = require('quinn.router');
 var respond = require('quinn.respond');
 
 var route = router.route;
-var getParam = router.getParam;
 
 var app = route(function(router) {
   var GET = router.GET;
@@ -15,8 +14,8 @@ var app = route(function(router) {
     return 'Root level route';
   });
 
-  GET('/hello/{name}', function() {
-    return 'Hello, ' + getParam('name');
+  GET('/hello/{name}', function(req, params) {
+    return 'Hello, ' + params.name;
   });
 
   GET('/json', function() {

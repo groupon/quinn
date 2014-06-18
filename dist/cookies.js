@@ -4,16 +4,24 @@ var mod$0 = require('cookie');
 var parseCookies = mod$0.parse;
 var serializeCookie = mod$0.serialize;
 
+var partial = require('lodash').partial;
+
+var lazyCalcForRequest = require('./context').lazyCalcForRequest;
+
+function _getCookies(req) {
+  var cookieHeader = req.headers.cookie;
+  return (
+    typeof cookieHeader !== 'string' ? {}
+    : parseCookies(req.headers.cookie)
+  );
+}
+
+var getCookies = partial(lazyCalcForRequest, 'cookies', _getCookies);
+
+module.exports.getCookies = getCookies;
 
 function getCookie(req, name) {
-  var cookieHeader = req.headers.cookie;
-  if (!req._parsedCookies) {
-    req._parsedCookies = (
-      typeof cookieHeader !== 'string' ? {}
-      : parseCookies(req.headers.cookie)
-    );
-  }
-  var cookies = req._parsedCookies;
+  var cookies = getCookies(req);
   return cookies[name];
 } module.exports.getCookie = getCookie;
 

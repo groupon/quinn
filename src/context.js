@@ -15,3 +15,11 @@ export function getFromRequestContext(key) {
 export function setInRequestContext(key, value) {
   return requestContextNS.set(key, value);
 }
+
+export function lazyCalcForRequest(key, fn, req) {
+  var value = getFromRequestContext(key);
+  if (value === undefined) {
+    setInRequestContext(key, value = fn(req));
+  }
+  return value;
+}

@@ -6,7 +6,6 @@
 import {resolve} from 'bluebird';
 import React from 'react';
 
-import {getParam} from 'quinn.router';
 import respond from 'quinn.respond';
 import {BufferBody} from 'quinn.respond';
 
@@ -74,10 +73,10 @@ function MyFancyLayout(body, options) {
   return HTML5Layout(body, options);
 }
 
-export function showPost() {
+export function showPost(req, params) {
   return MyFancyLayout(
     // First argument: the body; component or string or stream
-    loadPost(getParam('postId')).then(
+    loadPost(params.postId).then(
       post => PostView({ model: post })
     ),
     // Second argument: options for the layout (and the responder)

@@ -1,11 +1,15 @@
 'use strict';
 
-var Promise = require('bluebird');
 var partial = require('lodash').partial;
+var resolveDeep = require('resolve-deep');
+var Debug = require('debug');
 
 var respond = require('quinn.respond');
+var mod$0 = require('quinn.respond');var notFound = mod$0.notFound;var internalServerError = mod$0.internalServerError;
 
 var getRequestContextNS = require('./context').getRequestContextNS;
+
+var debug = Debug('quinn:core');
 
 function pipeTo(target, src) {
   if (src === undefined) return;
@@ -14,28 +18,17 @@ function pipeTo(target, src) {
 }
 
 function defaultErrorHandler(req, err) {
-  if (err) {
-    return ServerError(err.stack);
-  } else {
-    return NotFound(("Cannot " + req.method + " " + req.url + "\n"));
-  }
+  return err ?
+    internalServerError(err.stack) :
+    notFound(("Cannot " + req.method + " " + req.url + "\n"));
 }
 
 function defaultFatalHandler(req, err) {
-  setTimeout(function()  {
-    throw err;
-  });
+  setTimeout(function()  { throw err; });
 }
 
-function callIfUndefined(fn, value) {
-  if (value === undefined) {
-    return fn();
-  } else {
-    return value;
-  }
-}
-
-module.exports = function quinn(handler, errorHandler, fatalHandler) {
+function quinn(handler, errorHandler, fatalHandler) {
+  debug('init');
   if (typeof errorHandler !== 'function') {
     errorHandler = undefined;
   }
@@ -44,42 +37,37 @@ module.exports = function quinn(handler, errorHandler, fatalHandler) {
     fatalHandler = defaultFatalHandler;
   }
 
-  return getRequestContextNS().bind(function handleRequest(req, res, pass) {
-    var hasPass = typeof pass === 'function';
+  return getRequestContextNS().bind(function handleRequest(req, res) {
+    var url = req.url;
+    debug('handleRequest', url);
+
     var gracefulError = (
       (errorHandler && partial(errorHandler, req)) ||
-      (!hasPass && partial(defaultErrorHandler, req)) ||
-      undefined
+      partial(defaultErrorHandler, req)
     );
 
-    var gracefulRespond = (
-      (gracefulError && partial(callIfUndefined, gracefulError)) ||
-      undefined
-    );
+    function gracefulRespond(res) {
+      debug('found? %j', res !== undefined, url);
+      return res === undefined ? gracefulError() : res;
+    }
 
-    var forward = (
-      (hasPass && partial(callIfUndefined, pass)) ||
-      undefined
-    );
-
-    Promise.try(handler, [req])
-    .then(
-      gracefulRespond,
-      gracefulError
-    )
+    runRequestHandlerRaw(handler, req, {})
+    .then(gracefulRespond, gracefulError)
     .then(respond)
     .then(function(r)  {return r.resolved();})
     .then(partial(pipeTo, res))
-    .then(forward, pass)
     .catch(partial(fatalHandler, req))
     .catch(partial(defaultFatalHandler, req));
   });
 }
+quinn.version = require('../package.json').version;
+module.exports = quinn;
 
-function ServerError(props) {
-  return respond(props).status(500);
-} module.exports.ServerError = ServerError;
+function runRequestHandlerRaw(handler, req, params) {
+  return resolveDeep(params).then(partial(handler, req));
+} module.exports.runRequestHandlerRaw = runRequestHandlerRaw;
 
-function NotFound(props) {
-  return respond(props).status(404);
-} module.exports.NotFound = NotFound;
+function runRequestHandler(handler, req, params) {
+  return runRequestHandlerRaw(handler, req, params)
+    .then(respond);
+} module.exports.runRequestHandler = runRequestHandler;

@@ -16,8 +16,10 @@
     "bluebird": "^2.1.2",
     "continuation-local-storage": "^3.0.0",
     "cookie": "^0.1.2",
+    "debug": "^1.0.2",
     "lodash": "^2.4.1",
-    "minimist": "^0.1.0"
+    "minimist": "^0.1.0",
+    "resolve-deep": "^1.0.1"
   },
   "devDependencies": {
     "jshint": "~2.5.1",

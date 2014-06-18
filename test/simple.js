@@ -10,7 +10,6 @@ var quinn = require('../');
 
 var router = require('quinn.router');
 var route = router.route;
-var getParam = router.getParam;
 
 var respond = require('quinn.respond');
 
@@ -25,9 +24,9 @@ describe('quinn.boots', function() {
     var server = null;
     it('starts', function(done) {
       server = http.createServer(quinn(route(function(app) {
-        app.GET('/test', function(req) {
+        app.GET('/test', function(req, params) {
           var myCookie = getCookie(req, 'foo');
-          return getParam('testParam') + ' ' + myCookie;
+          return params.testParam + ' ' + myCookie;
         }, function(req, parsedUrl) {
           return { testParam: parsedUrl.query.a };
         });
@@ -36,8 +35,8 @@ describe('quinn.boots', function() {
           throw new Error('Fatality');
         });
 
-        app.GET('/hello/{name}', function() {
-          return respond('Hello, ' + getParam('name') + '!').status(201);
+        app.GET('/hello/{name}', function(req, params) {
+          return respond('Hello, ' + params.name + '!').status(201);
         });
 
         app.GET('/cookie', function() {

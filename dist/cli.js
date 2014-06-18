@@ -40,7 +40,7 @@ function run(rawArgv) {
   var cmd = argv._.shift() || 'help';
 
   if (argv.v || argv.version) {
-    return console.log(require('../package.json').version);
+    return console.log(quinn.version);
   }
 
   switch (cmd) {
