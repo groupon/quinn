@@ -33,8 +33,13 @@
 * Add a quinn CLI command for running an app
 
 
+### 2.0.0-pre6
+
+* Get rid of bundled modules, split up
+
+
 ## Now
 
-### 2.0.0-pre6
+### 2.0.0-pre7
 
 * Rendering HTML pages with React integration

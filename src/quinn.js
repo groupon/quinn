@@ -4,8 +4,8 @@ import {partial} from 'lodash';
 import resolveDeep from 'resolve-deep';
 import Debug from 'debug';
 
-import respond from 'quinn.respond';
-import {notFound, internalServerError} from 'quinn.respond';
+import respond from 'quinn-respond';
+import {notFound, internalServerError} from 'quinn-respond';
 
 import {getRequestContextNS} from './context';
 

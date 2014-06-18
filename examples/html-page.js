@@ -6,8 +6,8 @@
 import {resolve} from 'bluebird';
 import React from 'react';
 
-import respond from 'quinn.respond';
-import {BufferBody} from 'quinn.respond';
+import respond from 'quinn-respond';
+import {BufferBody} from 'quinn-respond';
 
 function loadPost(postId) {
   return resolve({

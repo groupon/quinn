@@ -19,11 +19,14 @@
     "debug": "^1.0.2",
     "lodash": "^2.4.1",
     "minimist": "^0.1.0",
+    "quinn-respond": "^1.0.0",
     "resolve-deep": "^1.0.1"
   },
   "devDependencies": {
     "jshint": "~2.5.1",
     "mocha": "^1.20.1",
+    "quinn-router": "^1.0.1",
+    "quinnc": "^1.0.0",
     "reakt": "0.0.5"
   },
   "directories": {

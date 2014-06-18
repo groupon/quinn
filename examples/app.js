@@ -2,8 +2,8 @@
 
 var all = require('bluebird').all;
 
-var router = require('quinn.router');
-var respond = require('quinn.respond');
+var router = require('quinn-router');
+var respond = require('quinn-respond');
 
 var route = router.route;
 

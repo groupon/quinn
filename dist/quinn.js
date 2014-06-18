@@ -4,8 +4,8 @@ var partial = require('lodash').partial;
 var resolveDeep = require('resolve-deep');
 var Debug = require('debug');
 
-var respond = require('quinn.respond');
-var mod$0 = require('quinn.respond');var notFound = mod$0.notFound;var internalServerError = mod$0.internalServerError;
+var respond = require('quinn-respond');
+var mod$0 = require('quinn-respond');var notFound = mod$0.notFound;var internalServerError = mod$0.internalServerError;
 
 var getRequestContextNS = require('./context').getRequestContextNS;
 
