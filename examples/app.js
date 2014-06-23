@@ -1,13 +1,34 @@
 'use strict';
 
-var all = require('bluebird').all;
+var Bluebird = require('bluebird');
+var all = Bluebird.all;
 
 var router = require('quinn-router');
 var respond = require('quinn-respond');
 
 var route = router.route;
 
-var app = route(function(router) {
+function firstHandler() {
+  var handlers = Array.prototype.slice.call(arguments);
+  function _tryFirst(idx, req, params) {
+    var handler = handlers[idx];
+    ++idx;
+    return Bluebird.try(handler, [req, params])
+      .then(function(res) {
+        if (res === undefined && idx < handlers.length) {
+          return _tryFirst(idx, req, params);
+        } else {
+          return res;
+        }
+      });
+  }
+
+  return function(req, params) {
+    return _tryFirst(0, req, params);
+  };
+}
+
+var baseApp = route(function(router) {
   var GET = router.GET;
 
   GET('/', function() {
@@ -36,6 +57,11 @@ var app = route(function(router) {
       .then(respond.json);
   });
 });
+
+var app = firstHandler(
+  baseApp,
+  require('./modules/flickr').handler
+);
 
 module.exports = app;
 
