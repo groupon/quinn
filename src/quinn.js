@@ -3,6 +3,7 @@
 import {partial} from 'lodash';
 import resolveDeep from 'resolve-deep';
 import Debug from 'debug';
+import Bluebird from 'bluebird';
 
 import respond from 'quinn-respond';
 import {notFound, internalServerError} from 'quinn-respond';
@@ -70,4 +71,41 @@ export function runRequestHandlerRaw(handler, req, params) {
 export function runRequestHandler(handler, req, params) {
   return runRequestHandlerRaw(handler, req, params)
     .then(respond);
+}
+
+function allValidHandlers(handlerArray) {
+  if (handlerArray.length < 1) {
+    return false;
+  }
+  return handlerArray.every(function(handler) {
+    return typeof handler === 'function';
+  });
+}
+
+export function firstHandler() {
+  var handlers = Array.prototype.slice.call(arguments);
+
+  if (!allValidHandlers(handlers)) {
+    var err = new Error('Usage: firstHandler(handler1, handler2, ...)');
+    return function() {
+      return Bluebird.reject(err);
+    };
+  }
+
+  function _tryFirst(idx, req, params) {
+    var handler = handlers[idx];
+    ++idx;
+    return Bluebird.try(handler, [req, params])
+      .then(function(res) {
+        if (res === undefined && idx < handlers.length) {
+          return _tryFirst(idx, req, params);
+        } else {
+          return res;
+        }
+      });
+  }
+
+  return function(req, params) {
+    return _tryFirst(0, req, params);
+  };
 }
