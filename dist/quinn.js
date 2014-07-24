@@ -6,7 +6,6 @@ var Debug = require('debug');
 var Bluebird = require('bluebird');
 
 var respond = require('quinn-respond');
-var mod$0 = require('quinn-respond');var notFound = mod$0.notFound;var internalServerError = mod$0.internalServerError;
 
 var getRequestContextNS = require('./context').getRequestContextNS;
 
@@ -20,12 +19,19 @@ function pipeTo(target, src) {
 
 function defaultErrorHandler(req, err) {
   return err ?
-    internalServerError(err.stack) :
-    notFound(("Cannot " + req.method + " " + req.url + "\n"));
+    respond.text(err.stack).status(500) :
+    respond.text(("Cannot " + req.method + " " + req.url + "\n")).status(404);
 }
 
 function defaultFatalHandler(req, err) {
   setTimeout(function()  { throw err; });
+}
+
+function applyDefaults(res) {
+  if (!res.hasHeader('Content-Type')) {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  }
+  return res;
 }
 
 function quinn(handler, errorHandler, fatalHandler) {
@@ -55,7 +61,7 @@ function quinn(handler, errorHandler, fatalHandler) {
     runRequestHandlerRaw(handler, req, {})
     .then(gracefulRespond, gracefulError)
     .then(respond)
-    .then(function(r)  {return r.resolved();})
+    .then(applyDefaults)
     .then(partial(pipeTo, res))
     .catch(partial(fatalHandler, req))
     .catch(partial(defaultFatalHandler, req));

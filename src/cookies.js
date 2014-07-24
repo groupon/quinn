@@ -26,7 +26,7 @@ export function getCookie(req, name) {
 }
 
 export function setCookie(res, name, value, opts) {
-  return res.addHeader('Set-Cookie', serializeCookie(name, value, opts));
+  return res.header('Set-Cookie', serializeCookie(name, value, opts));
 }
 
 export function setCookies(res, cookieMap) {

@@ -19,7 +19,7 @@
     "debug": "^1.0.2",
     "lodash": "^2.4.1",
     "minimist": "^0.1.0",
-    "quinn-respond": "^1.0.0",
+    "quinn-respond": "^2.0.0",
     "resolve-deep": "^1.0.1"
   },
   "devDependencies": {

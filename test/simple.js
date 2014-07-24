@@ -143,6 +143,7 @@ describe('quinn.boots', function() {
     it('can set cookies', function() {
       return getPath('/cookie')
         .then(function(res) {
+          assert.equal(res.statusCode, 200);
           assert(Array.isArray(res.headers['set-cookie']));
           assert.equal(res.headers['set-cookie'].length, 1);
           assert.equal(res.headers['set-cookie'][0],
