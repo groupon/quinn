@@ -1,6 +1,6 @@
 {
   "name": "quinn",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Maybe coming some day.",
   "main": "dist/quinn.js",
   "bin": "bin/quinn",
