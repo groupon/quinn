@@ -29,7 +29,7 @@ function defaultErrorHandler(req, err) {
     respond.text(("Cannot " + req.method + " " + req.url + "\n")).status(404);
 }
 
-function defaultFatalHandler(req, res, err) {
+function defaultFatalHandler(req, res) {
   res.statusCode = 500;
   try {
     res.end('Internal server error');
