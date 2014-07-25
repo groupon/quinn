@@ -13,8 +13,14 @@ var debug = Debug('quinn:core');
 
 function pipeTo(target, src) {
   if (src === undefined) return;
-  src.pipe(target);
-  return src;
+
+  return new Bluebird(function(resolve, reject) {
+    src.on('error', reject);
+
+    src.on('end', resolve);
+
+    src.pipe(target);
+  });
 }
 
 function defaultErrorHandler(req, err) {
@@ -23,8 +29,12 @@ function defaultErrorHandler(req, err) {
     respond.text(("Cannot " + req.method + " " + req.url + "\n")).status(404);
 }
 
-function defaultFatalHandler(req, err) {
-  setTimeout(function()  { throw err; });
+function defaultFatalHandler(req, res, err) {
+  res.statusCode = 500;
+  try {
+    res.end('Internal server error');
+  } catch (writeErr) {
+  }
 }
 
 function applyDefaults(res) {
@@ -63,8 +73,8 @@ function quinn(handler, errorHandler, fatalHandler) {
     .then(respond)
     .then(applyDefaults)
     .then(partial(pipeTo, res))
-    .catch(partial(fatalHandler, req))
-    .catch(partial(defaultFatalHandler, req));
+    .catch(partial(fatalHandler, req, res))
+    .catch(partial(defaultFatalHandler, req, res));
   });
 }
 quinn.version = require('../package.json').version;
