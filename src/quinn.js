@@ -25,7 +25,8 @@ function handle(request) {
     .pipe(respond({
       statusCode: 200,
       headers: {
-        'X-Req-User-Agent': request.headers['user-agent'] || 'Unknown'
+        'X-Req-User-Agent': request.headers['user-agent'] || 'Unknown',
+        'X-Foo': 'Bar'
       }
     }));
 }

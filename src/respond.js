@@ -1,7 +1,31 @@
 'use strict';
 
 const Stream = require('readable-stream');
-const httpify = require('caseless').httpify;
+const caseless = require('caseless');
+
+function httpify(resp, headers) {
+  const c = caseless(headers);
+
+  resp.setHeader = function setHeader(key, value) {
+    // Disable non-standard clobber behavior
+    return c.set(key, value, false);
+  };
+
+  resp.hasHeader = function hasHeader(key) {
+    return c.has(key);
+  };
+
+  resp.getHeader = function getHeader(key) {
+    return c.get(key);
+  };
+
+  resp.removeHeader = function removeHeader(key) {
+    return c.del(key);
+  };
+
+  resp.headers = c.dict;
+  return c;
+}
 
 class VirtualResponse extends Stream.PassThrough {
   constructor(props) {
@@ -41,11 +65,13 @@ class VirtualResponse extends Stream.PassThrough {
   pipe(res, options) {
     res.statusCode = this.statusCode;
 
-    const headers = this.headers;
-    const headerNames = Object.keys(headers);
-    for (let i = 0; i < headerNames.length; ++i) {
-      const name = headerNames[i];
-      res.setHeader(name, headers[name]);
+    if (typeof res.setHeader === 'function') {
+      const headers = this.headers;
+      const headerNames = Object.keys(headers);
+      for (let i = 0; i < headerNames.length; ++i) {
+        const name = headerNames[i];
+        res.setHeader(name, headers[name]);
+      }
     }
 
     return super.pipe(res, options);
