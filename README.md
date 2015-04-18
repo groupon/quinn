@@ -2,6 +2,27 @@
 
 A web framework designed for things to come.<sup>[1]</sup>
 
+```js
+import { createServer } from 'http';
+
+import quinn from 'quinn';
+import { json } from 'quinn/respond';
+
+import { loadUser } from './backend';
+
+const USER_PATH = /^\/users\/([\w]+)$/;
+
+const app = quinn(async req => {
+  const userPathMatch = req.match(USER_PATH);
+  if (userPathMatch !== null) {
+    const user = await loadUser(userPathMatch[1]);
+    return json({ message: 'Hello ' + user.name + '!' });
+  }
+});
+
+createServer(app).listen(3000);
+```
+
 ## Concepts
 
 ### Request handler
