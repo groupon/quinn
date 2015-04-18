@@ -1,7 +1,7 @@
 'use strict';
 
-const createApp = require('./app');
-const respond = require('./respond');
+const createApp = require('../../');
+const respond = require('../../respond');
 
 function makeRequest(url) {
   return new Promise(function(resolve, reject) {
