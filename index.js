@@ -21,22 +21,27 @@ function runApplication(handler, req, res) {
   return Promise.resolve(req)
     .then(handler)
     .then(function(vres) {
-      if (vres === undefined) return sendNotFound(res);
+      if (vres === undefined) return;
 
       return new Promise(function(resolve, reject) {
         vres.on('error', reject);
         vres.on('end', function() { resolve(vres); });
         vres.pipe(res);
       });
-    })
-    .then(null, function(err) { return sendFatalError(res, err); });
+    });
 }
 
 function createApp(handler) {
   return function(req, res) {
-    return runApplication(handler, req, res);
+    return runApplication(handler, req, res)
+      .then(function(result) {
+        if (result === undefined) return sendNotFound(res);
+        return result;
+      })
+      .then(null, function(err) { return sendFatalError(res, err); });
   };
 }
 
 module.exports = createApp;
-module.exports['default'] = createApp;
+createApp['default'] = createApp;
+createApp.runApplication = runApplication;

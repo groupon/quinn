@@ -6,19 +6,9 @@ A web framework designed for things to come.<sup>[1]</sup>
 import { createServer } from 'http';
 
 import quinn from 'quinn';
-import { json } from 'quinn/respond';
+import respond from 'quinn/respond';
 
-import { loadUser } from './backend';
-
-const USER_PATH = /^\/users\/([\w]+)$/;
-
-const app = quinn(async req => {
-  const userPathMatch = req.match(USER_PATH);
-  if (userPathMatch !== null) {
-    const user = await loadUser(userPathMatch[1]);
-    return json({ message: `Hello ${user.name}!` });
-  }
-});
+const app = quinn(req => respond({ body: 'Hello World!' }));
 
 createServer(app).listen(3000);
 ```
@@ -31,7 +21,7 @@ A potentially async function that takes a request and returns a response.
 
 ```js
 function handler(request) {
-    return result;
+  return result;
 }
 ```
 
@@ -68,7 +58,20 @@ the headers by calls to `setHeader` on the target, one header at a time.
 Quinn itself only cares that it has a `pipe` method
 which is used to forward the data to a [`ServerResponse`](https://iojs.org/api/http.html#http_class_http_serverresponse).
 
----
+## Combining Quinn
+
+### With Express
+
+```js
+import express from 'express';
+import quinn from 'quinn/express';
+import respond from 'quinn/respond';
+
+const app = express();
+app.get('/quinn-route', quinn(respond({ body: 'Hello World!' })));
+```
+
+-----
 
 <sup>[1]</sup> In other words: an experimental mess.
 
