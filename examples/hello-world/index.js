@@ -1,23 +1,11 @@
-'use strict';
+'use strict'; // just for jshint
 
-const createApp = require('../../');
-const respond = require('../../respond');
+import { createServer } from 'http';
 
-function makeRequest(url) {
-  return new Promise(function(resolve, reject) {
-    require('http')
-      .request(url)
-      .on('error', reject)
-      .on('response', function(res) {
-        res.on('error', reject);
-        res.setEncoding('utf8');
-        res.body = '';
-        res.on('data', function(chunk) { res.body += chunk; });
-        res.on('end', function() { resolve(res); });
-      })
-      .end();
-  });
-}
+import quinn from '../../';
+import respond from '../../respond';
+
+import Gofer from 'gofer';
 
 function handle(request) {
   if (request.url === '/foo') return;
@@ -32,15 +20,24 @@ function handle(request) {
     }));
 }
 
-const app = createApp(handle);
+async function fetchAndPrint(gofer, urlPath) {
+  const res = await gofer.fetch(urlPath).getResponse();
+  console.log(`Response for ${urlPath} (${res.statusCode}):
+---
+${res.body}
+...`);
+}
 
-require('http')
-  .createServer(app)
-  .listen(function() {
-    const port = this.address().port;
-    console.log('Listening on http://127.0.0.1:%d', port);
-    makeRequest('http://127.0.0.1:' + port + '/bar').then(function(res) {
-      console.log('Response: %d %j', res.statusCode, res.body, res.headers);
-      process.exit(0);
-    });
+const server = createServer(quinn(handle))
+  .listen(async () => {
+    const baseUrl = `http://127.0.0.1:${server.address().port}`;
+    const gofer = new Gofer({ globalDefaults: { baseUrl, maxStatusCode: 500 } });
+
+    await fetchAndPrint(gofer, '/foo');
+
+    console.log('\n===\n');
+
+    await fetchAndPrint(gofer, '/bar');
+
+    server.close();
   });

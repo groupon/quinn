@@ -1,7 +1,7 @@
 'use strict';
 
-const NOT_FOUND = new Buffer('Not found', 'utf8');
-const INTERNAL_ERROR = new Buffer('Internal Server Error', 'utf8');
+const NOT_FOUND = new Buffer('Not found\n', 'utf8');
+const INTERNAL_ERROR = new Buffer('Internal Server Error\n', 'utf8');
 
 function sendNotFound(res) {
   res.statusCode = 404;
