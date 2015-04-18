@@ -1,6 +1,6 @@
 'use strict';
 
-const Stream = require('readable-stream');
+const Stream = require('stream');
 const caseless = require('caseless');
 
 function httpify(resp, headers) {

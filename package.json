@@ -12,8 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "caseless": "^0.10.0",
-    "readable-stream": "^1.0.33"
+    "caseless": "^0.10.0"
   },
   "devDependencies": {
     "jshint": "^2.7.0",
