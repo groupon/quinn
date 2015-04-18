@@ -16,7 +16,7 @@ const app = quinn(async req => {
   const userPathMatch = req.match(USER_PATH);
   if (userPathMatch !== null) {
     const user = await loadUser(userPathMatch[1]);
-    return json({ message: 'Hello ' + user.name + '!' });
+    return json({ message: `Hello ${user.name}!` });
   }
 });
 
