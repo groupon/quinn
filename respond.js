@@ -1,40 +1,21 @@
 'use strict';
 
 const Stream = require('stream');
-const caseless = require('caseless');
-
-function httpify(resp, headers) {
-  const c = caseless(headers);
-
-  resp.setHeader = function setHeader(key, value) {
-    // Disable non-standard clobber behavior
-    return c.set(key, value, false);
-  };
-
-  resp.hasHeader = function hasHeader(key) {
-    return c.has(key);
-  };
-
-  resp.getHeader = function getHeader(key) {
-    return c.get(key);
-  };
-
-  resp.removeHeader = function removeHeader(key) {
-    return c.del(key);
-  };
-
-  resp.headers = c.dict;
-  return c;
-}
+const httpify = require('caseless').httpify;
 
 class VirtualResponse extends Stream.PassThrough {
   constructor(props) {
     super();
 
-    props = props || {};
-
     this.statusCode = props.statusCode || 200;
-    httpify(this, props.headers);
+
+    const c = httpify(this, props.headers);
+    this.setHeader = function setHeader(key, value) {
+      // Disable non-standard clobber behavior
+      return c.set(key, value, false);
+    };
+
+    if ('body' in props) this.body(props.body);
   }
 
   status(code) {
@@ -48,9 +29,7 @@ class VirtualResponse extends Stream.PassThrough {
   }
 
   body(body) {
-    if (typeof body === 'string') {
-      body = new Buffer(body, 'utf8');
-    }
+    if (typeof body === 'string') body = new Buffer(body);
 
     if (body instanceof Buffer) {
       this.header('Content-Length', body.length);
@@ -58,7 +37,6 @@ class VirtualResponse extends Stream.PassThrough {
     } else {
       throw new TypeError('Body has to be a string or a Buffer');
     }
-
     return this;
   }
 
@@ -79,11 +57,7 @@ class VirtualResponse extends Stream.PassThrough {
 }
 
 function respond(props) {
-  props = props || {};
-
-  const res = new VirtualResponse(props);
-
-  return 'body' in props ? res.body(props.body) : res;
+  return new VirtualResponse(props || {});
 }
 
 module.exports = respond;
