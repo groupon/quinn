@@ -7,33 +7,37 @@ import respond from '../../respond';
 
 import Gofer from 'gofer';
 
-function handle(request) {
-  if (request.url === '/foo') return;
+function handle({ url, headers }) {
+  if (url === '/foo') return;
   return require('fs')
     .createReadStream('.travis.yml')
     .pipe(respond({
       statusCode: 200,
       headers: {
-        'X-Req-User-Agent': request.headers['user-agent'] || 'Unknown',
+        'X-Req-User-Agent': headers['user-agent'] || 'Unknown',
         'X-Foo': 'Bar'
       }
     }));
 }
 
-async function fetchAndPrint(gofer, urlPath) {
-  const res = await gofer.fetch(urlPath).getResponse();
-  console.log(`Response for ${urlPath} (${res.statusCode}):
+async function fetchAndPrint(gofer, urlPath, options = {}) {
+  const { statusCode, body } = await gofer.fetch(urlPath, options).getResponse();
+  console.log(`Response for ${urlPath} (${statusCode}):
 ---
-${res.body}
+${body}
 ...`);
 }
 
 const server = createServer(quinn(handle))
   .listen(async () => {
     const baseUrl = `http://127.0.0.1:${server.address().port}`;
-    const gofer = new Gofer({ globalDefaults: { baseUrl, maxStatusCode: 500 } });
+    const gofer = new Gofer({ globalDefaults: { baseUrl } });
 
-    await fetchAndPrint(gofer, '/foo');
+    try {
+      await gofer.fetch('/foo');
+    } catch (err) {
+      console.log(err);
+    }
 
     console.log('\n===\n');
 
