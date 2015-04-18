@@ -1,17 +1,28 @@
 'use strict';
 
+const NOT_FOUND = new Buffer('Not found', 'utf8');
+const INTERNAL_ERROR = new Buffer('Internal Server Error', 'utf8');
+
+function sendNotFound(res) {
+  res.statusCode = 404;
+  res.end(NOT_FOUND);
+}
+
 function sendFatalError(res, err) {
   try { console.error(err.stack); } catch (_) {}
   try {
     res.statusCode = 500;
-    res.end('Internal Server Error');
+    res.end(INTERNAL_ERROR);
   } catch (_) {}
   return Promise.reject(err);
 }
 
 function runApplication(handler, req, res) {
-  new Promise(resolve => resolve(handler(req)))
+  Promise.resolve(req)
+    .then(handler)
     .then(vres => {
+      if (vres === undefined) return sendNotFound(res);
+
       return new Promise((resolve, reject) => {
         vres.on('error', reject);
         vres.on('end', resolve);

@@ -20,6 +20,7 @@ function makeRequest(url) {
 }
 
 function handle(request) {
+  if (request.url === '/foo') return;
   return require('fs')
     .createReadStream('.travis.yml')
     .pipe(respond({
@@ -38,7 +39,7 @@ require('http')
   .listen(function() {
     const port = this.address().port;
     console.log('Listening on http://127.0.0.1:%d', port);
-    makeRequest('http://127.0.0.1:' + port).then(function(res) {
+    makeRequest('http://127.0.0.1:' + port + '/bar').then(function(res) {
       console.log('Response: %d %j', res.statusCode, res.body, res.headers);
       process.exit(0);
     });
