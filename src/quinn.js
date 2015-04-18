@@ -12,8 +12,8 @@ function makeRequest(url) {
         res.on('error', reject);
         res.setEncoding('utf8');
         res.body = '';
-        res.on('data', chunk => { res.body += chunk; });
-        res.on('end', () => resolve(res));
+        res.on('data', function(chunk) { res.body += chunk; });
+        res.on('end', function() { resolve(res); });
       })
       .end();
   });

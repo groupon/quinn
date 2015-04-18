@@ -4,7 +4,7 @@
   "description": "Maybe coming some day.",
   "main": "dist/quinn.js",
   "scripts": {
-    "test": "jshint src && node --harmony --harmony_arrow_functions src/quinn.js"
+    "test": "jshint src && node --harmony src/quinn.js"
   },
   "author": {
     "name": "Jan Krems",

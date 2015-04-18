@@ -20,20 +20,22 @@ function sendFatalError(res, err) {
 function runApplication(handler, req, res) {
   return Promise.resolve(req)
     .then(handler)
-    .then(vres => {
+    .then(function(vres) {
       if (vres === undefined) return sendNotFound(res);
 
-      return new Promise((resolve, reject) => {
+      return new Promise(function(resolve, reject) {
         vres.on('error', reject);
-        vres.on('end', () => resolve(vres));
+        vres.on('end', function() { resolve(vres); });
         vres.pipe(res);
       });
     })
-    .then(null, err => sendFatalError(res, err));
+    .then(null, function(err) { return sendFatalError(res, err); });
 }
 
 function createApp(handler) {
-  return (req, res) => runApplication(handler, req, res);
+  return function(req, res) {
+    return runApplication(handler, req, res);
+  };
 }
 
 module.exports = createApp;
