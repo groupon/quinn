@@ -18,14 +18,14 @@ function sendFatalError(res, err) {
 }
 
 function runApplication(handler, req, res) {
-  Promise.resolve(req)
+  return Promise.resolve(req)
     .then(handler)
     .then(vres => {
       if (vres === undefined) return sendNotFound(res);
 
       return new Promise((resolve, reject) => {
         vres.on('error', reject);
-        vres.on('end', resolve);
+        vres.on('end', () => resolve(vres));
         vres.pipe(res);
       });
     })
