@@ -68,7 +68,7 @@ import quinn from 'quinn/express';
 import respond from 'quinn/respond';
 
 const app = express();
-app.get('/quinn-route', quinn(respond({ body: 'Hello World!' })));
+app.get('/quinn-route', quinn(req => respond({ body: 'Hello World!' })));
 ```
 
 -----
