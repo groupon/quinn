@@ -4,8 +4,7 @@
   "description": "Maybe coming some day.",
   "main": "dist/quinn.js",
   "scripts": {
-    "hello-world": "babel-node --stage 1 examples/hello-world",
-    "test": "jshint *.js && npm run --silent --no-spin hello-world"
+    "test": "jshint *.js && mocha --harmony"
   },
   "author": {
     "name": "Jan Krems",

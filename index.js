@@ -1,6 +1,6 @@
 'use strict';
 
-const NOT_FOUND = new Buffer('Not found\n', 'utf8');
+const NOT_FOUND = new Buffer('Not Found\n', 'utf8');
 const INTERNAL_ERROR = new Buffer('Internal Server Error\n', 'utf8');
 
 function sendNotFound(res) {
@@ -9,7 +9,6 @@ function sendNotFound(res) {
 }
 
 function sendFatalError(res, err) {
-  try { console.error(err.stack); } catch (_) {}
   try {
     res.statusCode = 500;
     res.end(INTERNAL_ERROR);

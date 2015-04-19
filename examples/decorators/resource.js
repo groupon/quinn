@@ -6,7 +6,7 @@ function routeDispatch(method, pathname, handler) {
   const wrapped = function(req) {
     if (req.method !== method) return;
     if (req.url !== pathname) return;
-    return handler(req);
+    return handler.call(this, req);
   };
   Object.assign(wrapped, { method, pathname });
   wrapped[QUINN_FUNCTION] = true;
@@ -17,7 +17,7 @@ function route(method, pathname) {
   return function(object, propertyName, descriptor) {
     if (descriptor === undefined && typeof object === 'function') {
       // Case 1: GET `/path` (handler)
-      return routeDispatch(method, pathname, object);
+      return routeDispatch(method, pathname, object, null);
     }
     // Case 2: @GET `/path` method() {}
     return {
@@ -37,7 +37,9 @@ export function PUT([ pathname ]) {
   return route('PUT', pathname);
 }
 
-function parseResource(resource) {
+function parseResource(resource, context) {
+  if (context === undefined) context = resource;
+
   const resourceName =
     (typeof resource.name === 'string' && resource.name) ||
     (resource.constructor && resource.constructor.name) || 'Unknown';
@@ -54,12 +56,15 @@ function parseResource(resource) {
         descriptor.value[QUINN_FUNCTION] === true;
     })
     .map(function({ descriptor: { value }, propName }) {
-      return Object.assign(value, { resourceName, actionName: propName });
+      return Object.assign(value.bind(context), {
+        actionName: propName,
+        resourceName
+      });
     })
-    .concat(parseResource(Object.getPrototypeOf(resource)));
+    .concat(parseResource(Object.getPrototypeOf(resource), context));
 }
 
 export function extractHandlers(...resources) {
-  const handlers = resources.map(parseResource);
+  const handlers = resources.map(r => parseResource(r));
   return [].concat(...handlers);
 }
