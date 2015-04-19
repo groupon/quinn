@@ -8,6 +8,7 @@ function routeDispatch(method, pathname, handler) {
     if (req.url !== pathname) return;
     return handler(req);
   };
+  Object.assign(wrapped, { method, pathname });
   wrapped[QUINN_FUNCTION] = true;
   return wrapped;
 }
@@ -19,10 +20,8 @@ function route(method, pathname) {
       return routeDispatch(method, pathname, object);
     }
     // Case 2: @GET `/path` method() {}
-    const wrapped = routeDispatch(method, pathname, descriptor.value);
-    Object.assign(wrapped, { method, pathname });
     return {
-      value: wrapped,
+      value: routeDispatch(method, pathname, descriptor.value),
       enumerable: descriptor.enumerable,
       configurable: descriptor.configurable,
       writable: descriptor.writable

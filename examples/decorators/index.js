@@ -44,6 +44,6 @@ const app = quinn(req => {
     });
   }, Promise.resolve());
 });
-const server = createServer(app).listen(() => {
+const server = createServer(app).listen(3000, () => {
   console.log(`Listening on http://127.0.0.1:${server.address().port}`);
 });
