@@ -1,37 +1,78 @@
-Maybe coming some day.
+# Quinn
+
+A web framework designed for things to come.<sup>[1]</sup>
+
+```js
+import { createServer } from 'http';
+
+import quinn from 'quinn';
+import respond from 'quinn/respond';
+
+const app = quinn(req => respond({ body: 'Hello World!' }));
+
+createServer(app).listen(3000);
+```
+
+## Concepts
 
 ### Request handler
 
-*This is what others might call an "application".*
-*But "application is a pretty silly name.*
+A potentially async function that takes a request and returns a response.
 
 ```js
-function(request, params) {
-    return response;
+function handler(request) {
+  return result;
 }
 ```
 
-#### `request`
+#### `Request`
 
-A node.js request object, as documented in the offical node.js docs.
-There are no additional properties, no magical extension methods.
+An [`http.IncomingMessage`](https://iojs.org/api/http.html#http_http_incomingmessage).
+There are no additional properties or magical extension methods.
 
-#### `params`
+#### `DispatchResult`
 
-Think: the "arguments".
-This can be path parameters, query parameters.
-`params` should never contain anything other than simple data.
-By default `params` defaults to an empty object.
-If a request handler forwards to a different handler,
-it should forward all params that were passed in.
-Injecting magic catch-all params is highly discouraged.
-Say no to `params.cookies` or `.session` or any other funny business.
-`params` SHOULD be a simple object.
-Any other kind of value should be the exception.
+Either a `VirtualResponse`<sup>[2]</sup> or `undefined`.
+If it's `undefined`, the handler was unable to handle the given request.
+E.g. the handler implements routing logic and no route matched the given url.
 
-#### `response`
+#### `VirtualResponse`
 
-Describes the response that should be returned.
-A proper response has a method to pipe to node.js response stream.
-It's also valid to return any of the things
-that can be coerced into a response object by `quinn.respond`.
+A pass-through stream describing the response that should be returned.
+While it might have additional utility functions,
+only the following properties and methods should be relied on:
+
+* [`response.setHeader(name, value)`](https://iojs.org/api/http.html#http_response_setheader_name_value)
+* [`response.getHeader(name)`](https://iojs.org/api/http.html#http_response_getheader_name)
+* [`response.removeHeader(name)`](https://iojs.org/api/http.html#http_response_removeheader_name)
+* [`response.statusCode`](https://iojs.org/api/http.html#http_response_statuscode)
+* [`response.write(chunk[, encoding][, callback])`](https://iojs.org/api/http.html#http_response_write_chunk_encoding_callback)
+* [`response.end([data][, encoding][, callback])`](https://iojs.org/api/http.html#http_response_end_data_encoding_callback)
+
+The behavior of each should match [`ServerResponse`](https://iojs.org/api/http.html#http_class_http_serverresponse).
+All headers and the status code should be forwarded
+when the response is piped to a target.
+The `statusCode` by setting the property,
+the headers by calls to `setHeader` on the target, one header at a time.
+
+Quinn itself only cares that it has a `pipe` method
+which is used to forward the data to a [`ServerResponse`](https://iojs.org/api/http.html#http_class_http_serverresponse).
+
+## Combining Quinn
+
+### With Express
+
+```js
+import express from 'express';
+import quinn from 'quinn/express';
+import respond from 'quinn/respond';
+
+const app = express();
+app.get('/quinn-route', quinn(req => respond({ body: 'Hello World!' })));
+```
+
+-----
+
+<sup>[1]</sup> In other words: an experimental mess.
+
+<sup>[2]</sup> Because buzz word.
