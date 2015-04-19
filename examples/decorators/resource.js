@@ -2,16 +2,25 @@
 
 const QUINN_FUNCTION = Symbol('QUINN_FUNCTION');
 
+function routeDispatch(method, pathname, handler) {
+  const wrapped = function(req) {
+    if (req.method !== method) return;
+    if (req.url !== pathname) return;
+    return handler(req);
+  };
+  wrapped[QUINN_FUNCTION] = true;
+  return wrapped;
+}
+
 function route(method, pathname) {
   return function(object, propertyName, descriptor) {
-    const handler = descriptor.value;
-    const wrapped = function(req) {
-      if (req.method !== method) return;
-      if (req.url !== pathname) return;
-      return handler(req);
-    };
+    if (descriptor === undefined && typeof object === 'function') {
+      // Case 1: GET `/path` (handler)
+      return routeDispatch(method, pathname, object);
+    }
+    // Case 2: @GET `/path` method() {}
+    const wrapped = routeDispatch(method, pathname, descriptor.value);
     Object.assign(wrapped, { method, pathname });
-    wrapped[QUINN_FUNCTION] = true;
     return {
       value: wrapped,
       enumerable: descriptor.enumerable,

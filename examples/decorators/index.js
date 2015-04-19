@@ -28,7 +28,14 @@ const objResource = {
   }
 }
 
-const handlers = extractHandlers(new MyResource(), objResource);
+const justFunctions = [
+  GET `/zapp` (req => respond({ body: 'Zapping along' })),
+  PUT `/zapp` (req => respond({ body: 'Zapping even more' }))
+];
+
+const handlers =
+  extractHandlers(new MyResource(), objResource).concat(justFunctions);
+
 const app = quinn(req => {
   return handlers.reduce((prev, current) => {
     return prev.then(result => {
