@@ -71,6 +71,18 @@ const app = express();
 app.get('/quinn-route', quinn(req => respond({ body: 'Hello World!' })));
 ```
 
+## References
+
+### Similar Libraries
+
+Most of these are based on JSGI.
+Which would make sense if node wouldn't include an http server.
+
+* [mikeal/response](https://github.com/mikeal/response)
+* [q-io](http://documentup.com/kriskowal/q-io#http-applications)
+* [bogart](https://github.com/nrstott/bogart)
+* [mach](https://github.com/mjackson/mach)
+
 -----
 
 <sup>[1]</sup> In other words: an experimental mess.
