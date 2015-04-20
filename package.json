@@ -19,7 +19,8 @@
     "express": "^4.12.3",
     "gofer": "^2.3.6",
     "jshint": "^2.7.0",
-    "mocha": "^2.2.4"
+    "mocha": "^2.2.4",
+    "response": "^0.14.0"
   },
   "directories": {
     "example": "examples",

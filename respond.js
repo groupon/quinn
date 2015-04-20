@@ -9,12 +9,7 @@ class VirtualResponse extends Stream.PassThrough {
 
     this.statusCode = props.statusCode || 200;
 
-    const c = httpify(this, props.headers);
-    this.setHeader = function setHeader(key, value) {
-      // Disable non-standard clobber behavior
-      return c.set(key, value, false);
-    };
-
+    httpify(this, props.headers);
     if ('body' in props) this.body(props.body);
   }
 
@@ -60,5 +55,13 @@ function respond(props) {
   return new VirtualResponse(props || {});
 }
 
+function json(obj, visitor, indent) {
+  return respond({
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify(obj, visitor, indent)
+  });
+}
+
 module.exports = respond;
 module.exports['default'] = respond;
+module.exports.json = json;

@@ -36,7 +36,7 @@ app.get('/delayed', quinn(function(req) {
   });
 }));
 
-describe.only('quinn:express', function() {
+describe('quinn:express', function() {
   const _$ = withTestApp(app),
         describeRequest = _$.describeRequest,
         assertStatusCode = _$.assertStatusCode,

@@ -1,6 +1,7 @@
 'use strict';
 
 const parseUrl = require('url').parse;
+const assert = require('assert');
 
 const quinn = require('../');
 const respond = require('../respond');
@@ -18,6 +19,9 @@ function handler(req) {
 
     case '/throw':
       throw new Error('Some Error');
+
+    case '/json':
+      return respond.json({ ok: true });
 
     case '/delayed':
       return new Promise(function(resolve, reject) {
@@ -56,6 +60,23 @@ describe('quinn:integration', function() {
   describeRequest('GET', '/throw', function() {
     assertStatusCode(500);
     itSends('Internal Server Error\n');
+  });
+
+  describeRequest('GET', '/json', function() {
+    assertStatusCode(200);
+    itSends('{"ok":true}');
+
+    it('has type application/json', function() {
+      assert.equal(
+        'application/json; charset=utf-8',
+        this.response.headers['content-type']);
+    });
+
+    it('includes content length', function() {
+      assert.equal(
+        '11',
+        this.response.headers['content-length']);
+    });
   });
 
   describeRequest('GET', '/delayed?ms=100', function() {
