@@ -2,66 +2,49 @@
 
 import { createServer } from 'http';
 
+import { GET, PUT, createRouter } from 'wegweiser';
+
 import quinn from '../..';
 import respond from '../../respond';
 
-import { GET, PUT, extractHandlers } from './resource';
-
-class MyResource {
+class PageResource {
   constructor() {
-    this.prefix = 'Result: ';
+    this.tag = 'div';
   }
 
-  @GET `/foo`
-  showFoo() {
-    return respond({ body: `${this.prefix}The thing` });
+  renderHtml(text) {
+    return respond({
+      body: `<${this.tag}>${text}</${this.tag}>`,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    });
   }
 
-  @PUT `/foo`
+  @GET('/p/:slug')
+  showPage(req, {slug}) {
+    return this.renderHtml(`Page "${slug}"`);
+  }
+
+  @PUT('/foo')
   updateFoo() {
-    return respond({ body: `${this.prefix}Updated!` });
+    return this.renderHtml('Updated!');
   }
 }
 
 const objResource = {
-  name: 'customResource',
-
-  // Options for path parameters:
-  // * Most compatible with other "stuff" out there
-  //   @GET `/bar/:id`
-  // * Cleaner way because it has unambiguous end
-  //   @GET `/bar/{id}`
-  // * No parsing necessary but a bit verbose
-  //   @GET `/bar/${'id'}`
-  // * Example of complex rules w/ types/validators
-  //   @GET `/:type${String}/:id${/[\w]+/}`
-  //   @GET `/{type}${String}/{id}${/[\w]+/}`
-  //   @GET `/${String}/${/[\d]+/}`  <- does not have names
-  //   showItem(req, category, id) { <- because this has
-  //   }
-
-  @GET `/bar`
+  @GET('/bar')
   showBar(req) {
     return respond({ body: 'A bar' });
   }
 }
 
 const justFunctions = [
-  GET `/zapp` (req => respond({ body: 'Zapping along' })),
-  PUT `/zapp` (req => respond({ body: 'Zapping even more' }))
+  GET('/zapp')(req => respond({ body: 'Zapping along' })),
+  PUT('/zapp')(req => respond({ body: 'Zapping even more' }))
 ];
 
-const handlers =
-  extractHandlers(new MyResource(), objResource).concat(justFunctions);
+const route = createRouter(PageResource, objResource, ...justFunctions);
 
-const app = quinn(req => {
-  return handlers.reduce((prev, current) => {
-    return prev.then(result => {
-      if (result) return result;
-      return current(req);
-    });
-  }, Promise.resolve());
-});
+const app = quinn(route);
 const server = createServer(app).listen(3000, () => {
   console.log(`Listening on http://127.0.0.1:${server.address().port}`);
 });

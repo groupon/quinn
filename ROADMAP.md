@@ -1,8 +1,12 @@
-# quinn 2
+## quinn 3
 
-## [The Road So Far](https://www.youtube.com/watch?v=2X_2IdybTV0&feature=kp)
+Focus on one thing: Convert request handlers to express or node applications.
 
-### 2.0.0-pre1
+## quinn 2
+
+### [The Road So Far](https://www.youtube.com/watch?v=2X_2IdybTV0&feature=kp)
+
+#### 2.0.0-pre1
 
 * Basic response object
 * Support for returning (promised) JSON data
@@ -36,10 +40,3 @@
 ### 2.0.0-pre6
 
 * Get rid of bundled modules, split up
-
-
-## Now
-
-### 2.0.0-pre7
-
-* Rendering HTML pages with React integration

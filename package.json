@@ -20,7 +20,8 @@
     "gofer": "^2.3.6",
     "jshint": "^2.7.0",
     "mocha": "^2.2.4",
-    "response": "^0.14.0"
+    "response": "^0.14.0",
+    "wegweiser": "^3.2.1"
   },
   "directories": {
     "example": "examples",
