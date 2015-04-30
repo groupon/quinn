@@ -2,7 +2,7 @@
 
 const runApplication = require('./').runApplication;
 
-function quinnExpress(handler) {
+function createApp(handler) {
   return function(req, res, next) {
     function forwardError(err) {
       setImmediate(function() { next(err); });
@@ -19,5 +19,7 @@ function quinnExpress(handler) {
   };
 }
 
-module.exports = quinnExpress;
-quinnExpress['default'] = quinnExpress;
+module.exports = createApp;
+createApp['default'] = createApp;
+createApp.createApp = createApp;
+createApp.runApplication = runApplication;

@@ -43,4 +43,5 @@ function createApp(handler) {
 
 module.exports = createApp;
 createApp['default'] = createApp;
+createApp.createApp = createApp;
 createApp.runApplication = runApplication;

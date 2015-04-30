@@ -27,6 +27,7 @@ class VirtualResponse extends Stream.PassThrough {
     if (typeof body === 'string') body = new Buffer(body);
 
     if (body instanceof Buffer) {
+      this.body = body;
       this.header('Content-Length', body.length);
       this.end(body);
     } else {
@@ -64,4 +65,5 @@ function json(obj, visitor, indent) {
 
 module.exports = respond;
 module.exports['default'] = respond;
+module.exports.respond = respond;
 module.exports.json = json;
