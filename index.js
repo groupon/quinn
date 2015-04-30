@@ -23,8 +23,8 @@ function runApplication(handler, req, res) {
       if (vres === undefined) return;
 
       return new Promise(function(resolve, reject) {
-        vres.on('error', reject);
-        vres.on('end', function() { resolve(vres); });
+        res.on('error', reject);
+        res.on('finish', function() { resolve(vres); });
         vres.pipe(res);
       });
     });
