@@ -4,11 +4,9 @@ A web framework designed for things to come.<sup>[1]</sup>
 
 ```js
 import { createServer } from 'http';
+import { createApp, respond } from 'quinn';
 
-import quinn from 'quinn';
-import respond from 'quinn/respond';
-
-const app = quinn(req => respond({ body: 'Hello World!' }));
+const app = createApp(req => respond({ body: 'Hello World!' }));
 
 createServer(app).listen(3000);
 ```
@@ -64,8 +62,7 @@ which is used to forward the data to a [`ServerResponse`](https://iojs.org/api/h
 
 ```js
 import express from 'express';
-import quinn from 'quinn/express';
-import respond from 'quinn/respond';
+import { createApp as quinn, respond } from 'quinn/express';
 
 const app = express();
 app.get('/quinn-route', quinn(req => respond({ body: 'Hello World!' })));

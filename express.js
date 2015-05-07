@@ -1,6 +1,8 @@
 'use strict';
 
-const runApplication = require('./').runApplication;
+const quinn = require('./');
+const runApplication = quinn.runApplication;
+const respond = quinn.respond;
 
 function createApp(handler) {
   return function(req, res, next) {
@@ -22,4 +24,5 @@ function createApp(handler) {
 module.exports = createApp;
 createApp['default'] = createApp;
 createApp.createApp = createApp;
+createApp.respond = respond;
 createApp.runApplication = runApplication;

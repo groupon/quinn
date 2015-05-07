@@ -1,5 +1,7 @@
 'use strict';
 
+const respond = require('./respond');
+
 const NOT_FOUND = new Buffer('Not Found\n', 'utf8');
 const INTERNAL_ERROR = new Buffer('Internal Server Error\n', 'utf8');
 
@@ -44,4 +46,5 @@ function createApp(handler) {
 module.exports = createApp;
 createApp['default'] = createApp;
 createApp.createApp = createApp;
+createApp.respond = respond;
 createApp.runApplication = runApplication;
