@@ -1,11 +1,12 @@
 language: node_js
 node_js:
-- iojs
+  - '8'
+  - '10'
+  - '12'
 deploy:
-  provider: npm
-  email: jan.krems+quinnjs@gmail.com
-  api_key:
-    secure: O8m3S63crz/8eeg+Me3hZ6jJpVWB2S7blBTYEgdOtVg7OkALNd1D0Qc0hyOWxioGwrnqhMLBtSUhbLQ/4ziL4gbBl5WhMINwfXa4iy0WEHF0darxVbT1YF9uGs6iB64FWmWHvINuW2v0EcXxG2AHyOgyDFCGzX2lYbl4S4p9Elo=
-  on:
-    tags: true
-    repo: quinnjs/quinn
+  - provider: script
+    script: ./node_modules/.bin/nlm release
+    skip_cleanup: true
+    'on':
+      branch: master
+      node: '10'

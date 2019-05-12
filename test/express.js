@@ -1,6 +1,5 @@
 'use strict';
 
-const parseUrl = require('url').parse;
 const assert = require('assert');
 
 const express = require('express');
@@ -40,6 +39,7 @@ describe('quinn:express', function() {
   const _$ = withTestApp(app),
         describeRequest = _$.describeRequest,
         assertStatusCode = _$.assertStatusCode,
+        itContains = _$.itContains,
         itSends = _$.itSends;
 
   describeRequest('GET', '/', function() {
@@ -50,7 +50,7 @@ describe('quinn:express', function() {
   describeRequest('GET', '/non-existing', function() {
     assertStatusCode(404);
     // The exact message depends on express
-    itSends('Cannot GET /non-existing\n');
+    itContains('Cannot GET /non-existing');
   });
 
   describeRequest('GET', '/invalid', function() {
@@ -62,7 +62,7 @@ describe('quinn:express', function() {
     assertStatusCode(500);
 
     it('sends the error stack', function() {
-      assert.equal(this.response.body.indexOf('Error: Some Error'), 0);
+      assert.notEqual(this.response.body.indexOf('Error: Some Error'), -1);
     });
   });
 
@@ -75,7 +75,7 @@ describe('quinn:express', function() {
     assertStatusCode(500);
 
     it('sends the error stack', function() {
-      assert.equal(this.response.body.indexOf('Error: Forced Delayed Error'), 0);
+      assert.notEqual(this.response.body.indexOf('Error: Forced Delayed Error'), -1);
     });
   });
 });

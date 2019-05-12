@@ -20,7 +20,8 @@ function withTestApp(app) {
   return {
     describeRequest: describeRequest,
     assertStatusCode: assertStatusCode,
-    itSends: itSends
+    itSends: itSends,
+    itContains: itContains
   };
 }
 
@@ -50,6 +51,13 @@ function assertStatusCode(statusCode) {
 function itSends(body) {
   it(`sends ${JSON.stringify(body)}`, function() {
     assert.equal(this.response.body, body);
+  });
+}
+
+function itContains(body) {
+  it(`sends text including ${JSON.stringify(body)}`, function() {
+    console.log(this.response.body);
+    assert.notEqual(this.response.body.indexOf(body), -1);
   });
 }
 
