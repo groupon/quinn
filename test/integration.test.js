@@ -15,7 +15,9 @@ function handler(req) {
       return respond().body('ok');
 
     case '/invalid':
-      return respond().body('invalid').status(400);
+      return respond()
+        .body('invalid')
+        .status(400);
 
     case '/throw':
       throw new Error('Some Error');
@@ -24,8 +26,8 @@ function handler(req) {
       return respond.json({ ok: true });
 
     case '/delayed':
-      return new Promise(function(resolve, reject) {
-        setTimeout(function() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
           if (parsed.query.fail) {
             reject(new Error('Forced Delayed Error'));
           } else {
@@ -33,58 +35,60 @@ function handler(req) {
           }
         }, parsed.query.ms || 150);
       });
+
+    default:
+      return; // eslint-disable-line consistent-return
   }
 }
 
-describe('quinn:integration', function() {
-  const _$ = withTestApp(quinn(handler)),
-        describeRequest = _$.describeRequest,
-        assertStatusCode = _$.assertStatusCode,
-        itSends = _$.itSends;
+describe('quinn:integration', () => {
+  const $ = withTestApp(quinn(handler)),
+    describeRequest = $.describeRequest,
+    assertStatusCode = $.assertStatusCode,
+    itSends = $.itSends;
 
-  describeRequest('GET', '/', function() {
+  describeRequest('GET', '/', () => {
     assertStatusCode(200);
     itSends('ok');
   });
 
-  describeRequest('GET', '/non-existing', function() {
+  describeRequest('GET', '/non-existing', () => {
     assertStatusCode(404);
     itSends('Not Found\n');
   });
 
-  describeRequest('GET', '/invalid', function() {
+  describeRequest('GET', '/invalid', () => {
     assertStatusCode(400);
     itSends('invalid');
   });
 
-  describeRequest('GET', '/throw', function() {
+  describeRequest('GET', '/throw', () => {
     assertStatusCode(500);
     itSends('Internal Server Error\n');
   });
 
-  describeRequest('GET', '/json', function() {
+  describeRequest('GET', '/json', () => {
     assertStatusCode(200);
     itSends('{"ok":true}');
 
     it('has type application/json', function() {
       assert.equal(
         'application/json; charset=utf-8',
-        this.response.headers['content-type']);
+        this.response.headers['content-type']
+      );
     });
 
     it('includes content length', function() {
-      assert.equal(
-        '11',
-        this.response.headers['content-length']);
+      assert.equal('11', this.response.headers['content-length']);
     });
   });
 
-  describeRequest('GET', '/delayed?ms=100', function() {
+  describeRequest('GET', '/delayed?ms=100', () => {
     assertStatusCode(200);
     itSends('delayed ok');
   });
 
-  describeRequest('GET', '/delayed?ms=100&fail=true', function() {
+  describeRequest('GET', '/delayed?ms=100&fail=true', () => {
     assertStatusCode(500);
     itSends('Internal Server Error\n');
   });
