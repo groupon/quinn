@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const parseUrl = require('url').parse;
 const assert = require('assert');
 
@@ -11,7 +13,7 @@ const withTestApp = require('./test-app');
 function handler(req) {
   const parsed = parseUrl(req.url, true);
   switch (parsed.pathname) {
-    case '/':
+    case '/ok':
       return respond().body('ok');
 
     case '/invalid':
@@ -25,6 +27,11 @@ function handler(req) {
     case '/json':
       return respond.json({ ok: true });
 
+    case '/file-stream':
+      return respond(
+        fs.createReadStream(path.resolve(__dirname, 'mocha.opts'))
+      );
+
     case '/delayed':
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -34,6 +41,12 @@ function handler(req) {
             resolve(respond().body('delayed ok'));
           }
         }, parsed.query.ms || 150);
+      });
+
+    case '/lazy-body':
+      return respond((request, response) => {
+        response.setHeader('x-side-effect', '1');
+        return request.url;
       });
 
     default:
@@ -47,9 +60,23 @@ describe('quinn:integration', () => {
     assertStatusCode = $.assertStatusCode,
     itSends = $.itSends;
 
-  describeRequest('GET', '/', () => {
+  describeRequest('GET', '/ok', () => {
     assertStatusCode(200);
     itSends('ok');
+  });
+
+  describeRequest('GET', '/file-stream', () => {
+    assertStatusCode(200);
+    itSends('--recursive\n');
+  });
+
+  describeRequest('GET', '/lazy-body?answer=42', () => {
+    assertStatusCode(200);
+    itSends('/lazy-body?answer=42');
+
+    it('has a custom header', function() {
+      assert.equal(this.response.headers['x-side-effect'], '1');
+    });
   });
 
   describeRequest('GET', '/non-existing', () => {
