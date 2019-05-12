@@ -2,15 +2,27 @@
   "name": "quinn",
   "version": "3.2.1",
   "description": "A web framework designed for things to come.",
-  "main": "dist/quinn.js",
+  "license": "BSD-3-Clause",
+  "main": "lib/quinn.js",
+  "homepage": "https://github.com/groupon/quinn",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/groupon/quinn"
+  },
+  "bugs": {
+    "url": "https://github.com/groupon/quinn/issues"
+  },
   "scripts": {
-    "test": "jshint *.js && mocha --harmony"
+    "test": "jshint *.js && mocha --harmony",
+    "posttest": "nlm verify"
   },
-  "author": {
-    "name": "Jan Krems",
-    "email": "jan.krems@gmail.com>"
+  "nlm": {
+    "license": {
+      "files": [
+        "lib"
+      ]
+    }
   },
-  "license": "MIT",
   "dependencies": {
     "caseless": "^0.10.0"
   },
@@ -24,16 +36,15 @@
     "response": "^0.14.0",
     "wegweiser": "^3.2.1"
   },
-  "directories": {
-    "example": "examples",
-    "test": "test"
+  "author": {
+    "name": "Groupon",
+    "email": "opensource@groupon.com"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/quinnjs/quinn.git"
-  },
-  "bugs": {
-    "url": "https://github.com/quinnjs/quinn/issues"
-  },
-  "homepage": "https://github.com/quinnjs/quinn"
+  "files": [
+    "*.js",
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  }
 }
