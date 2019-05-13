@@ -34,6 +34,27 @@ Either a `VirtualResponse`<sup>[2]</sup> or `undefined`.
 If it's `undefined`, the handler was unable to handle the given request.
 E.g. the handler implements routing logic and no route matched the given url.
 
+#### `respond`
+
+The `respond` function is the primary means to create `VirtualResponse` instances.
+It takes one of three possible values:
+
+* An existing `VirtualResponse` instance that will be returned unchanged.
+  This ensures that calling `respond` multiple times is idempotent.
+* A response body (see below).
+* An object with any combination of numeric `statusCode`,
+  `headers` object, and/or a `body` property.
+
+The `body` can be one of the following:
+
+* A buffer or `Uint8Array`.
+* A string.
+* A readable stream.
+* An empty body can be expressed by passing `null`.
+* A function that takes a request and a response and returns one of the previous types.
+  This variant is called a "lazy body" and can be used to delay serialization
+  or returns bodies that depend on the incoming request as with JSONP responses.
+
 #### `VirtualResponse`
 
 A pass-through stream describing the response that should be returned.
@@ -53,8 +74,11 @@ when the response is piped to a target.
 The `statusCode` by setting the property,
 the headers by calls to `setHeader` on the target, one header at a time.
 
-Quinn itself only cares that it has a `pipe` method
-which is used to forward the data to a [`ServerResponse`](https://iojs.org/api/http.html#http_class_http_serverresponse).
+A `VirtualResponse` can either be piped to a target stream
+or forwarded using `response.forwardTo(req, res)`.
+Lazy bodies are only supported when using `forwardTo`.
+When using `forwardTo`, it will return a promise
+that resolves once the response has been successfully written.
 
 ## Combining Quinn
 
