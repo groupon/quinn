@@ -16,6 +16,15 @@ function handler(req) {
     case '/ok':
       return respond().body('ok');
 
+    case '/redirect':
+      return respond({
+        statusCode: 302,
+        headers: { Location: '/post-redirect' },
+      });
+
+    case '/post-redirect':
+      return respond({ statusCode: 201 }).body('redirected');
+
     case '/invalid':
       return respond()
         .body('invalid')
@@ -63,6 +72,11 @@ describe('quinn:integration', () => {
   describeRequest('GET', '/ok', () => {
     assertStatusCode(200);
     itSends('ok');
+  });
+
+  describeRequest('GET', '/redirect', () => {
+    assertStatusCode(201);
+    itSends('redirected');
   });
 
   describeRequest('GET', '/file-stream', () => {
