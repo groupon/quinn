@@ -1,3 +1,10 @@
+### 3.3.1
+
+* test: gofer bump - **[@aotarola](https://github.com/aotarola)** [#4](https://github.com/groupon/quinn/pull/4)
+  - [`7611913`](https://github.com/groupon/quinn/commit/76119131d8128bd2ec1aed98f246121f9f8a6bfb) **test:** gofer bump
+  - [`d245aed`](https://github.com/groupon/quinn/commit/d245aed67631f4162accfc526f6cf6ab8c8c1a2f) **test:** updated `response` package
+
+
 ### 3.3.0
 
 * Get the package back in shape - **[@jkrems](https://github.com/jkrems)** [#3](https://github.com/groupon/quinn/pull/3)
