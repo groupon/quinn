@@ -1,3 +1,9 @@
+### 3.3.2
+
+* test: mocha bump - **[@aotarola](https://github.com/aotarola)** [#5](https://github.com/groupon/quinn/pull/5)
+  - [`5b293a6`](https://github.com/groupon/quinn/commit/5b293a6fb7e20313a860fd33c945e5ad60aa66b7) **test:** mocha bump
+
+
 ### 3.3.1
 
 * test: gofer bump - **[@aotarola](https://github.com/aotarola)** [#4](https://github.com/groupon/quinn/pull/4)
