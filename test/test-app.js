@@ -30,14 +30,19 @@ function describeRequest(method, uri, fn) {
     before(function() {
       const self = this;
       return this.client
-        .fetch({
+        .fetch(uri, {
           method,
-          uri,
           maxStatusCode: 600,
         })
-        .getResponse()
         .then(res => {
-          self.response = res;
+          this.response = {
+            statusCode: res.statusCode,
+            headers: res.headers,
+          };
+          return res.text();
+        })
+        .then(res => {
+          self.response.body = res;
         });
     });
 

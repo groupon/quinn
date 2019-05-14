@@ -21,7 +21,7 @@ function handle({ url, headers }) {
 }
 
 async function fetchAndPrint(gofer, urlPath, options = {}) {
-  const { statusCode, body } = await gofer.fetch(urlPath, options).getResponse();
+  const { statusCode, body } = await gofer.fetch(urlPath, options);
   console.log(`Response for ${urlPath} (${statusCode}):
 ---
 ${body}

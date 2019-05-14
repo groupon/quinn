@@ -75,8 +75,8 @@ describe('quinn:integration', () => {
   });
 
   describeRequest('GET', '/redirect', () => {
-    assertStatusCode(201);
-    itSends('redirected');
+    assertStatusCode(302);
+    itSends('');
   });
 
   describeRequest('GET', '/file-stream', () => {
