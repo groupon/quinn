@@ -81,7 +81,7 @@ describe('quinn:integration', () => {
 
   describeRequest('GET', '/file-stream', () => {
     assertStatusCode(200);
-    itSends('--recursive\n');
+    itSends('--recursive\n--exit\n');
   });
 
   describeRequest('GET', '/lazy-body?answer=42', () => {
