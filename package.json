@@ -40,7 +40,7 @@
     "mocha": "^3.1.2",
     "nlm": "^3.6.1",
     "prettier": "^1.6.1",
-    "response": "^0.14.0",
+    "response": "^0.18.0",
     "wegweiser": "^3.2.1"
   },
   "author": {
