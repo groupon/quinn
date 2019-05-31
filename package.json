@@ -13,7 +13,7 @@
     "url": "https://github.com/groupon/quinn/issues"
   },
   "scripts": {
-    "pretest": "eslint lib test",
+    "pretest": "eslint . && tsc",
     "test": "mocha",
     "posttest": "nlm verify"
   },
@@ -28,6 +28,9 @@
     "caseless": "^0.10.0"
   },
   "devDependencies": {
+    "@types/caseless": "^0.12.2",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.4",
     "assertive": "^2.1.0",
     "eslint": "^5.1.0",
     "eslint-config-groupon": "^7.2.0",
@@ -41,6 +44,7 @@
     "nlm": "^3.6.1",
     "prettier": "^1.6.1",
     "response": "^0.18.0",
+    "typescript": "^3.5.1",
     "wegweiser": "^3.2.1"
   },
   "author": {
