@@ -1,3 +1,9 @@
+### 3.3.3
+
+* Add basic internal type checks - **[@jkrems](https://github.com/jkrems)** [#6](https://github.com/groupon/quinn/pull/6)
+  - [`538e3cd`](https://github.com/groupon/quinn/commit/538e3cd6e9f3e03347a0dc9e10944ac02ac854da) **style:** Add basic internal type checks
+
+
 ### 3.3.2
 
 * test: mocha bump - **[@aotarola](https://github.com/aotarola)** [#5](https://github.com/groupon/quinn/pull/5)

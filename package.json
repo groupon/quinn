@@ -1,6 +1,6 @@
 {
   "name": "quinn",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "A web framework designed for things to come.",
   "license": "BSD-3-Clause",
   "main": "lib/quinn.js",
