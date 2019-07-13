@@ -1,3 +1,9 @@
+### 3.3.4
+
+* Bump lodash from 4.17.11 to 4.17.14 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#7](https://github.com/groupon/quinn/pull/7)
+  - [`56f0a4a`](https://github.com/groupon/quinn/commit/56f0a4ae4b8bcc74f7432ec7adce7d48fbe60b5d) **chore:** Bump lodash from 4.17.11 to 4.17.14 - see: [4](- [Commits](https://github.com/lodash/lodash/compare/4)
+
+
 ### 3.3.3
 
 * Add basic internal type checks - **[@jkrems](https://github.com/jkrems)** [#6](https://github.com/groupon/quinn/pull/6)
