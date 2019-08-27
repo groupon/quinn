@@ -1,3 +1,9 @@
+### 3.3.5
+
+* chore: Bump eslint-utils from 1.3.1 to 1.4.2 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#8](https://github.com/groupon/quinn/pull/8)
+  - [`f1da157`](https://github.com/groupon/quinn/commit/f1da15730d9408f63ff07505bdaf7326a331d385) **chore:** Bump eslint-utils from 1.3.1 to 1.4.2
+
+
 ### 3.3.4
 
 * Bump lodash from 4.17.11 to 4.17.14 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#7](https://github.com/groupon/quinn/pull/7)
