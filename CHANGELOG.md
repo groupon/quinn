@@ -1,3 +1,9 @@
+### 3.3.6
+
+* chore: Bump acorn from 6.1.1 to 6.4.1 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#9](https://github.com/groupon/quinn/pull/9)
+  - [`84ec8f2`](https://github.com/groupon/quinn/commit/84ec8f21bcf13d18712a4b10e8f0ae5ab9812712) **chore:** Bump acorn from 6.1.1 to 6.4.1 - see: [6](- [Commits](https://github.com/acornjs/acorn/compare/6)
+
+
 ### 3.3.5
 
 * chore: Bump eslint-utils from 1.3.1 to 1.4.2 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#8](https://github.com/groupon/quinn/pull/8)
