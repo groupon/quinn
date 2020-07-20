@@ -1,3 +1,9 @@
+### 3.3.7
+
+* chore: Bump lodash from 4.17.14 to 4.17.19 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#10](https://github.com/groupon/quinn/pull/10)
+  - [`23031c5`](https://github.com/groupon/quinn/commit/23031c5fcb0b46fd5b702ee676c291540b0a936d) **chore:** Bump lodash from 4.17.14 to 4.17.19 - see: [4](- [Commits](https://github.com/lodash/lodash/compare/4)
+
+
 ### 3.3.6
 
 * chore: Bump acorn from 6.1.1 to 6.4.1 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#9](https://github.com/groupon/quinn/pull/9)
