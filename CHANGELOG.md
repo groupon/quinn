@@ -1,3 +1,9 @@
+### 3.3.8
+
+* chore: Bump ini from 1.3.5 to 1.3.7 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#11](https://github.com/groupon/quinn/pull/11)
+  - [`344bb5d`](https://github.com/groupon/quinn/commit/344bb5d3149876fae525a8089079d7c7cc2e1f30) **chore:** Bump ini from 1.3.5 to 1.3.7 - see: [v1](- [Commits](https://github.com/isaacs/ini/compare/v1)
+
+
 ### 3.3.7
 
 * chore: Bump lodash from 4.17.14 to 4.17.19 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#10](https://github.com/groupon/quinn/pull/10)
