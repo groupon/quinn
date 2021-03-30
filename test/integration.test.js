@@ -26,9 +26,7 @@ function handler(req) {
       return respond({ statusCode: 201 }).body('redirected');
 
     case '/invalid':
-      return respond()
-        .body('invalid')
-        .status(400);
+      return respond().body('invalid').status(400);
 
     case '/throw':
       throw new Error('Some Error');
@@ -38,7 +36,7 @@ function handler(req) {
 
     case '/file-stream':
       return respond(
-        fs.createReadStream(path.resolve(__dirname, 'mocha.opts'))
+        fs.createReadStream(path.resolve(__dirname, 'stubs/stream.txt'))
       );
 
     case '/delayed':
@@ -81,15 +79,15 @@ describe('quinn:integration', () => {
 
   describeRequest('GET', '/file-stream', () => {
     assertStatusCode(200);
-    itSends('--recursive\n--exit\n');
+    itSends('foo\n');
   });
 
   describeRequest('GET', '/lazy-body?answer=42', () => {
     assertStatusCode(200);
     itSends('/lazy-body?answer=42');
 
-    it('has a custom header', function() {
-      assert.equal(this.response.headers['x-side-effect'], '1');
+    it('has a custom header', function () {
+      assert.strictEqual(this.response.headers['x-side-effect'], '1');
     });
   });
 
@@ -112,15 +110,15 @@ describe('quinn:integration', () => {
     assertStatusCode(200);
     itSends('{"ok":true}');
 
-    it('has type application/json', function() {
-      assert.equal(
-        'application/json; charset=utf-8',
-        this.response.headers['content-type']
+    it('has type application/json', function () {
+      assert.strictEqual(
+        this.response.headers['content-type'],
+        'application/json; charset=utf-8'
       );
     });
 
-    it('includes content length', function() {
-      assert.equal('11', this.response.headers['content-length']);
+    it('includes content length', function () {
+      assert.strictEqual(this.response.headers['content-length'], '11');
     });
   });
 
