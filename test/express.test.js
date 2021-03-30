@@ -21,9 +21,7 @@ app.get(
 app.get(
   '/invalid',
   quinn(() => {
-    return respond()
-      .body('invalid')
-      .status(400);
+    return respond().body('invalid').status(400);
   })
 );
 
@@ -75,7 +73,7 @@ describe('quinn:express', () => {
   describeRequest('GET', '/throw', () => {
     assertStatusCode(500);
 
-    it('sends the error stack', function() {
+    it('sends the error stack', function () {
       assert.notEqual(this.response.body.indexOf('Error: Some Error'), -1);
     });
   });
@@ -88,7 +86,7 @@ describe('quinn:express', () => {
   describeRequest('GET', '/delayed?ms=100&fail=true', () => {
     assertStatusCode(500);
 
-    it('sends the delayed error stack', function() {
+    it('sends the delayed error stack', function () {
       assert.notEqual(
         this.response.body.indexOf('Error: Forced Delayed Error'),
         -1

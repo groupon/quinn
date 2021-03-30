@@ -14,7 +14,7 @@
   },
   "scripts": {
     "pretest": "eslint . && tsc",
-    "test": "mocha",
+    "test": "c8 mocha",
     "posttest": "nlm verify"
   },
   "nlm": {
@@ -24,28 +24,35 @@
       ]
     }
   },
+  "engines": {
+    "node": ">=8.3"
+  },
+  "mocha": {
+    "exit": true,
+    "recursive": true
+  },
   "dependencies": {
-    "caseless": "^0.10.0"
+    "caseless": "^0.12.0"
   },
   "devDependencies": {
     "@types/caseless": "^0.12.2",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.0.4",
-    "assertive": "^2.1.0",
-    "eslint": "^5.1.0",
-    "eslint-config-groupon": "^7.2.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-mocha": "^5.1.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-prettier": "^2.6.2",
-    "express": "^4.12.3",
-    "gofer": "^3.7.5",
-    "mocha": "^6.1.4",
-    "nlm": "^3.6.1",
-    "prettier": "^1.6.1",
+    "@types/node": "^12.20.7",
+    "c8": "^7.7.0",
+    "eslint": "^7.23.0",
+    "eslint-config-groupon": "^10.0.3",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-mocha": "^8.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "express": "^4.17.1",
+    "gofer": "^5.1.2",
+    "mocha": "^8.3.2",
+    "nlm": "^5.4.1",
+    "prettier": "^2.2.1",
     "response": "^0.18.0",
-    "typescript": "^3.5.1",
-    "wegweiser": "^3.2.1"
+    "typescript": "^3.9.9",
+    "wegweiser": "^4.2.0"
   },
   "author": {
     "name": "Groupon",

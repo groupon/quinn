@@ -1,3 +1,11 @@
 {
-  "extends": "groupon/node8"
+  "extends": "groupon",
+  "overrides": [
+    {
+      "files": ["test/*.js", "*.test.js"],
+      "env": {
+        "mocha": true
+      }
+    }
+  ]
 }
