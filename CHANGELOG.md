@@ -1,3 +1,10 @@
+### v3.3.9 (2021-03-30)
+
+#### 🏡 Internal
+
+* [#12](https://github.com/groupon/quinn/pull/12) chore: switch to main & update packages ([@aaarichter](https://github.com/aaarichter)) 
+
+
 ### 3.3.8
 
 * chore: Bump ini from 1.3.5 to 1.3.7 - **[@dependabot[bot]](https://github.com/apps/dependabot)** [#11](https://github.com/groupon/quinn/pull/11)

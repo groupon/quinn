@@ -1,3 +1,6 @@
+[![nlm-github](https://img.shields.io/badge/github-groupon%2Fquinn%2Fissues-F4D03F?logo=github&logoColor=white)](https://github.com/groupon/quinn/issues)
+![nlm-node](https://img.shields.io/badge/node-%3E%3D8.3-blue?logo=node.js&logoColor=white)
+![nlm-version](https://img.shields.io/badge/version-3.3.9-blue?logo=version&logoColor=white)
 # Quinn
 
 A web framework designed for things to come.<sup>[1]</sup>
