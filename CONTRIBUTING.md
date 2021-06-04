@@ -40,7 +40,7 @@ it might be better to follow the [instructions for contributing code below](#con
 
 **Note:** If you're planning on making substantial changes,
 please [open an issue first to discuss your idea](#reporting-issues).
-Otherwise you might end up investing a lot of work
+Otherwise, you might end up investing a lot of work
 only to discover that it conflicts with plans the maintainers might have.
 
 The general steps for creating a pull request are:
